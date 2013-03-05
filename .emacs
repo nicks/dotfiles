@@ -11,3 +11,5 @@
 
 ; backup settings
 (setq backup-directory-alist `(("." . "~/.saves")))
+
+
