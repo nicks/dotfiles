@@ -20,13 +20,21 @@
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 (defun add-untabify-on-write-hook ()
-  (add-hook 'write-file-hooks 'untabify-buffer nil t))
+  (add-hook 'write-contents-functions 'untabify-buffer nil t))
+(defun add-trailing-whitespace-on-write-hook ()
+  (add-hook 'write-contents-functions 'delete-trailing-whitespace-hook nil t))
+
+(defun delete-trailing-whitespace-hook ()
+  (delete-trailing-whitespace)
+  nil)
 
 (defun untabify-buffer ()
   (interactive)
-  (untabify (point-min) (point-max)))
+  (untabify (point-min) (point-max))
+  nil)
 
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
+(add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
