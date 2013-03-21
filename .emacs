@@ -29,12 +29,12 @@
   (add-hook 'write-contents-functions 'delete-trailing-whitespace-hook nil t))
 
 (defun delete-trailing-whitespace-hook ()
-  (delete-trailing-whitespace)
+  (save-excursion (delete-trailing-whitespace))
   nil)
 
 (defun untabify-buffer ()
   (interactive)
-  (untabify (point-min) (point-max))
+  (save-excursion (untabify (point-min) (point-max)))
   nil)
 
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
@@ -53,18 +53,55 @@ of FILE in the current directory, suitable for creation"
 			if (file-exists-p (expand-file-name file d))
 			return d
 			if (equal d root)
-			return nil))))
+			return ""))))
 
 (defun compile-command ()
   (interactive)
-  (set (make-local-variable 'compile-command) (format "cd %s && make " (get-closest-pathname)))
+  (set (make-local-variable 'compile-command) 
+       (format "cd %s && make %s" 
+	       (get-closest-pathname)
+	       (let* ((last-command (car compile-history))
+		      (make-command-index (string-match "make .*" (or last-command ""))))
+		 (if make-command-index
+		     (substring last-command (+ make-command-index 5))
+		   ""))))
   (call-interactively 'compile))
+
+; Window resolution
+(defun set-size-according-to-resolution ()
+  (interactive)
+  (if (display-graphic-p)
+  (progn
+    ;; use 120 char wide window for largeish displays
+    ;; and smaller 80 column windows for smaller displays
+    ;; pick whatever numbers make sense for you
+    (if (> (x-display-pixel-width) 1280)
+           (add-to-list 'default-frame-alist (cons 'width 120))
+           (add-to-list 'default-frame-alist (cons 'width 80)))
+    ;; for the height, subtract a couple hundred pixels
+    ;; from the screen height (for panels, menubars and
+    ;; whatnot), then divide by the height of a char to
+    ;; get the height we want
+    (add-to-list 'default-frame-alist 
+         (cons 'height (/ (- (x-display-pixel-height) 200)
+                             (frame-char-height)))))))
+
+(set-face-attribute 'default nil :height 144)
+(set-size-according-to-resolution)
+
+; yasnippet.el
+(add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
+(require 'yasnippet)
+(yas-global-mode 1)
 
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
 (global-set-key "\C-cj" 'next-error)
 (global-set-key "\C-ck" 'previous-error)
+(global-set-key "\C-cw" 'set-size-according-to-resolution)
+(global-set-key "\C-cy" 'yas/insert-snippet)
+(global-set-key "\C-cv" 'recompile)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -72,7 +109,8 @@ of FILE in the current directory, suitable for creation"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(js2-basic-offset 2)
- '(js2-strict-missing-semi-warning nil))
+ '(js2-strict-missing-semi-warning nil)
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
