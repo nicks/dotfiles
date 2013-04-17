@@ -24,7 +24,7 @@
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ; protobuf mode
-(add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/emacs/lisp")
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
