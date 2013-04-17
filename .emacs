@@ -5,13 +5,13 @@
 (transient-mark-mode 1)
 (set-background-color "#222")
 (set-foreground-color "#ddd")
-(set-face-foreground 'modeline "firebrick")
+(set-face-foreground 'mode-line "firebrick")
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq-default fill-column 80)
 
 ; shell-mode
-(setq path "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin")
+(setq path "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/Library/Java/JavaVirtualMachines/jdk1.7.0_12.jdk/Contents/Home/bin")
 (setenv "PATH" path)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
@@ -22,6 +22,12 @@
 ; js2-mode
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
+; protobuf mode
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(autoload 'protobuf-mode "protobuf-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
+
 
 (defun add-untabify-on-write-hook ()
   (add-hook 'write-contents-functions 'untabify-buffer nil t))
@@ -39,6 +45,8 @@
 
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'java-mode-hook 'add-untabify-on-write-hook)
+(add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)
 
 ; Default compile commands.
 ; Find the nearest makefile and use that.
@@ -108,6 +116,7 @@ of FILE in the current directory, suitable for creation"
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(c-basic-offset 2)
  '(js2-basic-offset 2)
  '(js2-strict-missing-semi-warning nil)
  '(show-paren-mode t))
