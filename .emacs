@@ -1,6 +1,8 @@
 (require 'cl)
 (require 'compile)
 
+(add-to-list 'load-path "~/emacs/lisp")
+
 ; UI
 (transient-mark-mode 1)
 (set-background-color "#222")
@@ -24,10 +26,11 @@
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ; protobuf mode
-(add-to-list 'load-path "~/emacs/lisp")
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
+; manage-imports
+(autoload 'import-word "manage-imports" t nil)
 
 (defun add-untabify-on-write-hook ()
   (add-hook 'write-contents-functions 'untabify-buffer nil t))
@@ -110,6 +113,7 @@ of FILE in the current directory, suitable for creation"
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
 (global-set-key "\C-cy" 'yas/insert-snippet)
 (global-set-key "\C-cv" 'recompile)
+(global-set-key "\C-ci" 'import-word)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -117,8 +121,10 @@ of FILE in the current directory, suitable for creation"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(c-basic-offset 2)
+ '(c-offsets-alist (quote ((statement-cont . 4) (arglist-intro . 4))))
  '(js2-basic-offset 2)
  '(js2-strict-missing-semi-warning nil)
+ '(python-indent 2)
  '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
