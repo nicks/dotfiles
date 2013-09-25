@@ -25,6 +25,14 @@
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
+; less-mode
+(autoload 'less-css-mode "less-css-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.less$" . less-css-mode))
+
+; closure-template-html-mode
+(autoload 'closure-template-html-mode "closure-template-html-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.soy$" . closure-template-html-mode))
+
 ; protobuf mode
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
@@ -46,10 +54,24 @@
   (save-excursion (untabify (point-min) (point-max)))
   nil)
 
+(defun clear-search-path ()
+  (set (make-local-variable 'compilation-search-path) '(nil))
+  nil)
+
+(defun set-indent-tabs-mode ()
+  (set (make-local-variable 'intend-tabs-mode) t)
+  nil)
+
+(setq-default indent-tabs-mode nil)
+
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'java-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'makefile-bsdmake-mode-hook 'set-indent-tabs-mode)
+(add-hook 'closure-template-html-mode-hook 'add-untabify-on-write-hook)
+(add-hook 'closure-template-html-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'grep-mode-hook 'clear-search-path)
 
 ; Default compile commands.
 ; Find the nearest makefile and use that.
@@ -115,6 +137,8 @@ of FILE in the current directory, suitable for creation"
 (global-set-key "\C-cv" 'recompile)
 (global-set-key "\C-ci" 'import-word)
 
+(require 'json)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -124,8 +148,15 @@ of FILE in the current directory, suitable for creation"
  '(c-offsets-alist (quote ((statement-cont . 4) (arglist-intro . 4))))
  '(js2-basic-offset 2)
  '(js2-strict-missing-semi-warning nil)
- '(python-indent 2)
- '(show-paren-mode t))
+ '(js2-bounce-indent-p t)
+ '(js2-continuation-offset 4)
+ '(js2-strict-missing-semi-warning nil)
+ '(less-css-compile-at-save nil)
+ '(less-css-lessc-command "lessc")
+ '(less-css-lessc-options nil)
+ '(python-indent-offset 2)
+ '(show-paren-mode t)
+ '(vc-follow-symlinks t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
