@@ -37,6 +37,10 @@
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
+; go mode
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
+
 ; manage-imports
 (autoload 'import-word "manage-imports" t nil)
 
@@ -64,6 +68,12 @@
 
 (setq-default indent-tabs-mode nil)
 
+(defun add-gofmt-hook ()
+  (add-hook 'before-save-hook 'gofmt-before-save))
+
+(defun setup-godef-jump ()
+  (local-set-key (kbd "M-.") 'godef-jump))
+
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'java-mode-hook 'add-untabify-on-write-hook)
@@ -72,6 +82,8 @@
 (add-hook 'closure-template-html-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'closure-template-html-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'grep-mode-hook 'clear-search-path)
+(add-hook 'go-mode-hook 'add-gofmt-hook)
+(add-hook 'go-mode-hook 'setup-godef-jump)
 
 ; Default compile commands.
 ; Find the nearest makefile and use that.
