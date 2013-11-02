@@ -43,6 +43,7 @@
 
 ; manage-imports
 (autoload 'import-word "manage-imports" t nil)
+(autoload 'load-java-imports-file "manage-imports" t nil)
 
 (defun add-untabify-on-write-hook ()
   (add-hook 'write-contents-functions 'untabify-buffer nil t))
@@ -73,6 +74,8 @@
 
 (defun setup-godef-jump ()
   (local-set-key (kbd "M-.") 'godef-jump))
+
+(load-java-imports-file "~/.emacs-java-imports")
 
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
