@@ -173,7 +173,7 @@
 	  (error "Please call load-java-imports-file!"))
       
       (write-region
-       (format "(setq java-imports-alist %s)" (print java-imports-alist))
+       (format "(setq java-imports-alist `%s)" (print java-imports-alist))
        nil java-imports-file-name))
     (cdr entry)))
 
