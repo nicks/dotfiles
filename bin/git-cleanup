@@ -1,0 +1,4 @@
+#!/bin/sh
+
+BRANCH=$(git current)
+git branch --merged | grep -v "\\bmaster\\b" | grep -v "\\b$BRANCH\\b" | xargs -n 1 git branch -d
