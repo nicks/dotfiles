@@ -154,6 +154,9 @@ of FILE in the current directory, suitable for creation"
 
 (require 'json)
 
+;; Default to utf-8-unix
+(prefer-coding-system 'utf-8-unix)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
