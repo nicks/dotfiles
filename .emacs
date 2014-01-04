@@ -13,7 +13,7 @@
 (setq-default fill-column 80)
 
 ; shell-mode
-(setq path "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/Library/Java/JavaVirtualMachines/jdk1.7.0_12.jdk/Contents/Home/bin")
+(setq path "C:\\msys\\1.0\\bin")
 (setenv "PATH" path)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
@@ -134,13 +134,8 @@ of FILE in the current directory, suitable for creation"
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
-(set-face-attribute 'default nil :height 144)
+(set-face-attribute 'default nil :height 120)
 (set-size-according-to-resolution)
-
-; yasnippet.el
-(add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
-(require 'yasnippet)
-(yas-global-mode 1)
 
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
