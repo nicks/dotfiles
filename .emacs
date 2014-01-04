@@ -156,6 +156,7 @@ of FILE in the current directory, suitable for creation"
 
 ;; Default to utf-8-unix
 (prefer-coding-system 'utf-8-unix)
+(setq inhibit-eol-conversion t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
