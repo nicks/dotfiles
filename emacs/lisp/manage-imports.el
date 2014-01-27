@@ -220,6 +220,14 @@
 	  (qualified-name-at-point))
 	 (t (imports-unsupported-error)))))
 
+(defun sort-imports ()
+  "Sort the imports at the top of the file"
+  (interactive)
+  (save-excursion
+    ; Read all the imports
+    (goto-char (point-min))
+    (replace-imports (imports-after-point))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Unit test helper functions
 
