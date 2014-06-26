@@ -41,6 +41,10 @@
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
 
+; coffee mode
+(autoload 'coffee-mode "coffee-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
+
 ; manage-imports
 (autoload 'import-word "manage-imports" t nil)
 (autoload 'load-java-imports-file "manage-imports" t nil)
