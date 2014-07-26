@@ -141,11 +141,6 @@ of FILE in the current directory, suitable for creation"
 (set-face-attribute 'default nil :height 144)
 (set-size-according-to-resolution)
 
-; yasnippet.el
-(add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
-(require 'yasnippet)
-(yas-global-mode 1)
-
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
