@@ -11,6 +11,7 @@
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq-default fill-column 80)
+(setq-default tab-width 2)
 
 ; shell-mode
 (setq path "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/Library/Java/JavaVirtualMachines/jdk1.7.0_12.jdk/Contents/Home/bin")
@@ -24,6 +25,12 @@
 ; js2-mode
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
+; jshint
+(setq jshint-error-regexp 
+      '("^\\([a-zA-Z\.0-9_/-]+\\): line \\([0-9]+\\), col \\([0-9]+\\)" 1 2 3))
+(setq compilation-error-regexp-alist
+      (cons jshint-error-regexp compilation-error-regexp-alist))
 
 ; less-mode
 (autoload 'less-css-mode "less-css-mode" nil t)
@@ -47,7 +54,19 @@
 
 ; manage-imports
 (autoload 'import-word "manage-imports" t nil)
-(autoload 'load-java-imports-file "manage-imports" t nil)
+(autoload 'sort-imports "manage-imports" t nil)
+
+;; json formatting
+;; http://irreal.org/blog/?p=354
+(defun format-json ()
+  (interactive)
+  (shell-command-on-region (point-min) (point-max) "python -m json.tool" (buffer-name) t)
+  nil)
+
+(defun format-json-region ()
+  (interactive)
+  (shell-command-on-region (mark) (point) "python -m json.tool" (buffer-name) t)
+  nil)
 
 (defun add-untabify-on-write-hook ()
   (add-hook 'write-contents-functions 'untabify-buffer nil t))
@@ -78,8 +97,6 @@
 
 (defun setup-godef-jump ()
   (local-set-key (kbd "M-.") 'godef-jump))
-
-(load-java-imports-file "~/.emacs-java-imports")
 
 (add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
@@ -150,6 +167,7 @@ of FILE in the current directory, suitable for creation"
 (global-set-key "\C-cy" 'yas/insert-snippet)
 (global-set-key "\C-cv" 'recompile)
 (global-set-key "\C-ci" 'import-word)
+(global-set-key "\C-cs" 'sort-imports)
 
 (require 'json)
 
