@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ "master" = "$(git rev-parse --abbrev-ref HEAD)" ] ; then
+	echo "\033[1;31mYou may not shove master\033[0m"
+	exit 1;
+fi
+
+if [ "--amend" = "$1" ] ; then
+  if [ "$(git log -1 --pretty=oneline)" = "$(git log -1 --pretty=oneline --merges)" ] ; then
+    echo "\033[1;31mYou may not amend merge commits\033[0m"
+    exit 1;
+  fi
+
+  git commit --amend --no-edit
+fi
+
+git push --force origin HEAD -u
