@@ -79,8 +79,10 @@
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
 ; go mode
+(package-require 'go-mode)
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
+(setq gofmt-command "goimports")
 
 ; coffee mode
 (autoload 'coffee-mode "coffee-mode" nil t)
