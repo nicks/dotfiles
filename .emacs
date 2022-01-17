@@ -285,6 +285,14 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (prefer-coding-system 'utf-8-unix)
 (setq inhibit-eol-conversion t)
 
+;; Colorize compilation buffer.
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -294,9 +302,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
  '(c-basic-offset 2)
  '(c-offsets-alist (quote ((statement-cont . 4) (arglist-intro . 4))))
- '(compilation-search-path (quote ("." "global-shared" "out/intermediates/web-fe")))
+ '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
- '(flycheck-javascript-eslint-executable "medium2-lint.sh")
  '(js2-basic-offset 2)
  '(js2-continuation-offset 4)
  '(js2-strict-missing-semi-warning nil)
