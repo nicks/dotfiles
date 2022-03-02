@@ -304,6 +304,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(c-offsets-alist (quote ((statement-cont . 4) (arglist-intro . 4))))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
+ '(grep-find-command
+   '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
  '(js2-basic-offset 2)
  '(js2-continuation-offset 4)
  '(js2-strict-missing-semi-warning nil)
