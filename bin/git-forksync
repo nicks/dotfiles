@@ -1,0 +1,14 @@
+#!/bin/bash
+# Syncs a fork
+
+set -euo pipefail
+
+BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | cut -d/ -f 4 -)
+REPO=$(git remote get-url origin | cut -d: -f 2 -)
+
+curl \
+  -X POST \
+  -H "Accept: application/vnd.github.v3+json" \
+  -H "Authorization: token $GITHUB_API_TOKEN" \
+  https://api.github.com/repos/$REPO/merge-upstream \
+  -d "{\"branch\":\"$BRANCH\"}"
