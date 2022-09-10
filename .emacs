@@ -1,24 +1,24 @@
 ;;; .emacs
 
-(require 'cl)
-(require 'compile)
 (require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
+(setq package-list
+			'(go-mode
+				flycheck
+				tide))
+
+; activate all the packages
 (package-initialize)
 
-(require 'flycheck)
+; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
 
-(defun package-require (pkg)
-  "Install a package only if it's not already installed."
-  (when (not (package-installed-p pkg))
-    (package-install pkg)))
-
-(add-to-list 'load-path "~/emacs/lisp")
-
-; setup elpa
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
 
 ; UI
 (transient-mark-mode 1)
@@ -41,58 +41,14 @@
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
-; js2-mode
-(package-require 'js2-mode)
-
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(add-to-list 'auto-mode-alist '("BUILD" . python-mode))
-(add-to-list 'auto-mode-alist '("BUCK" . python-mode))
-(add-to-list 'auto-mode-alist '("\\.bzl$" . python-mode))
-
-(setq-default js2-mode-indent-ignore-first-tab t)
-(setq-default js2-mode-show-parse-errors nil)
-(setq-default js2-strict-inconsistent-return-warning nil)
-(setq-default js2-strict-var-hides-function-arg-warning nil)
-(setq-default js2-strict-missing-semi-warning nil)
-(setq-default js2-strict-trailing-comma-warning nil)
-(setq-default js2-strict-cond-assign-warning nil)
-(setq-default js2-strict-var-redeclaration-warning nil)
-(setq-default js2-global-externs
-      '("module" "require" "__dirname" "process" "console" "define" "JSON"))
-
-; jshint
-(setq jshint-error-regexp 
-      '("^\\([a-zA-Z\.0-9_/-]+\\): line \\([0-9]+\\), col \\([0-9]+\\)" 1 2 3))
-(setq compilation-error-regexp-alist
-      (cons jshint-error-regexp compilation-error-regexp-alist))
-
-; less-mode
-(autoload 'less-css-mode "less-css-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.less$" . less-css-mode))
-
-; closure-template-html-mode
-(autoload 'closure-template-html-mode "closure-template-html-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.soy$" . closure-template-html-mode))
-
 ; protobuf mode
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
 ; go mode
-(package-require 'go-mode)
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
 (setq gofmt-command "goimports")
-
-; coffee mode
-(autoload 'coffee-mode "coffee-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
-
-; manage-imports
-(autoload 'import-word "manage-imports" t nil)
-(autoload 'sort-imports "manage-imports" t nil)
-(autoload 'load-java-imports-file "manage-imports" t nil)
-(load-java-imports-file "~/.emacs-java-imports")
 
 ;; json formatting
 ;; http://irreal.org/blog/?p=354
@@ -144,32 +100,8 @@
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
-;; disable jshint since we prefer eslint checking
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(javascript-jshint)))
-
-;; disable pyhint since we prefer eslint checking
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-          '(python-pylint)))
-
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(protobuf-protoc)))
-
-;; use eslint with web-mode for jsx files
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-(flycheck-add-mode 'javascript-eslint 'js2-mode)
-(flycheck-add-mode 'javascript-eslint 'javascript-mode)
-
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
-
-;; disable json-jsonlist checking for json files
-(setq-default flycheck-disabled-checkers
-  (append flycheck-disabled-checkers
-    '(json-jsonlist)))
 
 ;; https://github.com/purcell/exec-path-from-shell
 ;; only need exec-path-from-shell on OSX
@@ -177,15 +109,10 @@
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
-(add-hook 'js2-mode-hook (lambda () (set (make-local-variable 'electric-indent-chars) '(?\n))))
-(add-hook 'js2-mode-hook 'add-untabify-on-write-hook)
-(add-hook 'js2-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'java-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'java-mode-hook 'set-java-indentation-hook)
 (add-hook 'makefile-bsdmake-mode-hook 'set-indent-tabs-mode)
-(add-hook 'closure-template-html-mode-hook 'add-untabify-on-write-hook)
-(add-hook 'closure-template-html-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'grep-mode-hook 'clear-search-path)
 (add-hook 'go-mode-hook 'add-gofmt-hook)
 (add-hook 'go-mode-hook 'setup-godef-jump)
@@ -274,10 +201,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cj" 'next-error)
 (global-set-key "\C-ck" 'previous-error)
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
-(global-set-key "\C-cy" 'yas/insert-snippet)
-(global-set-key "\C-cv" 'recompile)
-(global-set-key "\C-ci" 'import-word)
-(global-set-key "\C-cs" 'sort-imports)
 
 (require 'json)
 
@@ -306,12 +229,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(css-indent-offset 2)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
- '(js2-basic-offset 2)
- '(js2-continuation-offset 4)
- '(js2-strict-missing-semi-warning nil)
- '(less-css-compile-at-save nil)
- '(less-css-lessc-command "lessc")
- '(less-css-lessc-options nil)
  '(python-indent-offset 2)
  '(show-paren-mode t)
  '(vc-follow-symlinks t))
