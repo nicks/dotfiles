@@ -6,7 +6,13 @@
 (setq package-list
 			'(go-mode
 				flycheck
-				tide))
+				tide
+        typescript-mode
+        web-mode
+        eslint-rc
+        lsp-mode))
+
+(require 'cl)
 
 ; activate all the packages
 (package-initialize)
@@ -30,7 +36,6 @@
 (setq-default fill-column 80)
 (setq-default tab-width 2)
 (setq ring-bell-function 'ignore)
-
 
 (setq find-args "-name .git -prune -o -name node_modules -prune -o -name out -prune -o -name .svn -prune -o -type f ! -name '*class'")
 
@@ -149,7 +154,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
        (cons "mvn" "pom.xml")
        (cons "make" "Makefile")
        (cons "buck" "BUCK")
-       (cons "./gradlew" "gradle.properties")))
+       (cons "./gradlew" "gradle.properties")
+       (cons "yarn" "package.json")))
 
 (defun get-best-build-descriptor ()
   (max-element build-descriptors
@@ -216,21 +222,43 @@ This may not do the correct thing in presence of links. If it does not find FILE
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+(require 'typescript-mode)
+(autoload 'typescript-mode "typescript-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
+
+(require 'lsp-mode)
+(add-hook 'typescript-mode-hook #'lsp)
+
+(defun lsp--eslint-before-save (orig-fun)
+  "Run lsp-eslint-apply-all-fixes and then run the original lsp--before-save."
+  (when lsp-eslint-auto-fix-on-save (lsp-eslint-fix-all))
+  (funcall orig-fun))
+
+(advice-add 'lsp--before-save :around #'lsp--eslint-before-save)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auto-save-file-name-transforms (quote ((".*" "~/.emacs.d/autosaves/\\1" t))))
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
+ '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
+ '(backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
  '(c-basic-offset 2)
- '(c-offsets-alist (quote ((statement-cont . 4) (arglist-intro . 4))))
+ '(c-offsets-alist
+   '((statement-cont . +)
+     (arglist-intro . c-lineup-arglist-intro-after-paren)))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
+ '(lsp-eslint-auto-fix-on-save t)
+ '(lsp-eslint-enable t)
+ '(lsp-eslint-run "onSave")
+ '(package-selected-packages '(lsp-mode eslint-rc web-mode cl tide go-mode))
  '(python-indent-offset 2)
  '(show-paren-mode t)
+ '(typescript-indent-level 2)
  '(vc-follow-symlinks t))
 
 (custom-set-faces
