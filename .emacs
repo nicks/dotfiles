@@ -9,6 +9,7 @@
 				tide
         typescript-mode
         web-mode
+        terraform-mode
         eslint-rc
         lsp-mode))
 
@@ -155,7 +156,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
        (cons "make" "Makefile")
        (cons "buck" "BUCK")
        (cons "./gradlew" "gradle.properties")
-       (cons "yarn" "package.json")))
+       (cons "yarn" "package.json")
+       (cons "go" "go.mod")))
 
 (defun get-best-build-descriptor ()
   (max-element build-descriptors
@@ -224,11 +226,22 @@ This may not do the correct thing in presence of links. If it does not find FILE
 
 (require 'typescript-mode)
 (autoload 'typescript-mode "typescript-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
 
+(require 'terraform-mode)
+(autoload 'terraform-mode "terraform-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.tf$" . terraform-mode))
+
 (require 'lsp-mode)
 (add-hook 'typescript-mode-hook #'lsp)
+(add-hook 'web-mode-hook #'lsp)
+(add-hook 'terraform-mode-hook #'lsp)
+
+;; We usually edit monorepos where file watching won't work well.
+(setq lsp-enable-file-watchers nil)
 
 (defun lsp--eslint-before-save (orig-fun)
   "Run lsp-eslint-apply-all-fixes and then run the original lsp--before-save."
@@ -255,7 +268,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(lsp-eslint-auto-fix-on-save t)
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
- '(package-selected-packages '(lsp-mode eslint-rc web-mode cl tide go-mode))
+ '(package-selected-packages
+   '(terraform-mode lsp-mode eslint-rc web-mode cl tide go-mode))
  '(python-indent-offset 2)
  '(show-paren-mode t)
  '(typescript-indent-level 2)
