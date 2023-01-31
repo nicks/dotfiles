@@ -4,21 +4,24 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (setq package-list
-			'(go-mode
-				flycheck
-				tide
+      '(flycheck
+        tide
+        go-mode
         typescript-mode
         web-mode
         terraform-mode
         eslint-rc
-        lsp-mode))
+        lsp-mode
+        dockerfile-mode
+        python-mode
+        docker-compose-mode))
 
 (require 'cl)
 
 ; activate all the packages
 (package-initialize)
 
-; fetch the list of packages available 
+; fetch the list of packages available
 (unless package-archive-contents
   (package-refresh-contents))
 
@@ -130,10 +133,10 @@
 ; Courtesy of http://emacswiki.org/emacs/CompileCommand#toc5
 (defun get-closest-pathname (file)
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
-This may not do the correct thing in presence of links. If it does not find FILE, then it shall return 
+This may not do the correct thing in presence of links. If it does not find FILE, then it shall return
 '/'"
   (let ((root (expand-file-name "/"))) ; the win32 builds should translate this correctly
-    (expand-file-name (loop 
+    (expand-file-name (loop
 			for d = default-directory then (expand-file-name ".." d)
 			if (file-exists-p (expand-file-name file d))
 			return d
@@ -196,7 +199,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
     ;; from the screen height (for panels, menubars and
     ;; whatnot), then divide by the height of a char to
     ;; get the height we want
-    (add-to-list 'default-frame-alist 
+    (add-to-list 'default-frame-alist
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
@@ -230,6 +233,9 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (add-to-list 'auto-mode-alist '("\\.jsx$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
+
+(require 'python-mode)
+(add-to-list 'auto-mode-alist '("Tiltfile$" . python-mode))
 
 (require 'terraform-mode)
 (autoload 'terraform-mode "terraform-mode" nil t)
@@ -269,8 +275,16 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
  '(package-selected-packages
-   '(terraform-mode lsp-mode eslint-rc web-mode cl tide go-mode))
+   '(tide flycheck docker-compose-mode dockerfile-mode swift-mode terraform-mode lsp-mode eslint-rc web-mode cl go-mode))
  '(python-indent-offset 2)
+ '(safe-local-variable-values
+   '((eval let
+           ((project-directory
+             (car
+              (dir-locals-find-file default-directory))))
+           (setq lsp-clients-typescript-server-args
+                 `("--tsserver-path" ,(concat project-directory ".yarn/sdks/typescript/bin/tsserver")
+                   "--stdio")))))
  '(show-paren-mode t)
  '(typescript-indent-level 2)
  '(vc-follow-symlinks t))
