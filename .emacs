@@ -16,8 +16,6 @@
         python-mode
         docker-compose-mode))
 
-(require 'cl)
-
 ; activate all the packages
 (package-initialize)
 
@@ -136,7 +134,7 @@
 This may not do the correct thing in presence of links. If it does not find FILE, then it shall return
 '/'"
   (let ((root (expand-file-name "/"))) ; the win32 builds should translate this correctly
-    (expand-file-name (loop
+    (expand-file-name (cl-loop
 			for d = default-directory then (expand-file-name ".." d)
 			if (file-exists-p (expand-file-name file d))
 			return d
