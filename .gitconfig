@@ -1,3 +1,12 @@
 [user]
-	email = nicholas.j.santos@gmail.com
-	name = Nick Santos
+  name = Nick Santos
+  email = nicholas.j.santos@gmail.com
+
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+# repo-specific overrides
+[includeIf "gitdir:docker/"]
+  path = .gitconfig-docker
+[includeIf "gitdir:tilt-dev/"]
+  path = .gitconfig-docker
