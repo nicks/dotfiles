@@ -14,6 +14,9 @@
         lsp-mode
         dockerfile-mode
         python-mode
+        company
+        treemacs
+        lsp-treemacs
         docker-compose-mode))
 
 (require 'cl)
@@ -209,6 +212,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
+(global-set-key "\C-ct" 'treemacs)
 (global-set-key "\C-cj" 'next-error)
 (global-set-key "\C-ck" 'previous-error)
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
@@ -235,7 +239,22 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
 
 (require 'python-mode)
-(add-to-list 'auto-mode-alist '("Tiltfile$" . python-mode))
+
+(define-derived-mode tiltfile-mode
+  python-mode "tiltfile"
+  "Major mode for Tilt Dev."
+  (setq-local case-fold-search nil))
+
+(add-to-list 'auto-mode-alist '("Tiltfile$" . tiltfile-mode))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+    '(tiltfile-mode . "tiltfile"))
+
+  (lsp-register-client
+    (make-lsp-client :new-connection (lsp-stdio-connection `("tilt" "lsp" "start"))
+                     :activation-fn (lsp-activate-on "tiltfile")
+                     :server-id 'tilt-lsp)))
 
 (require 'terraform-mode)
 (autoload 'terraform-mode "terraform-mode" nil t)
@@ -245,6 +264,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (add-hook 'typescript-mode-hook #'lsp)
 (add-hook 'web-mode-hook #'lsp)
 (add-hook 'terraform-mode-hook #'lsp)
+(add-hook 'tiltfile-mode-hook #'lsp)
 
 ;; We usually edit monorepos where file watching won't work well.
 (setq lsp-enable-file-watchers nil)
