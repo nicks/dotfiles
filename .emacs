@@ -31,6 +31,31 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+; install straight.el, a package manager that
+; we need to install copilot
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+
+; install github copilot hooks
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+(add-hook 'prog-mode-hook 'copilot-mode)
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
 ; UI
 (transient-mark-mode 1)
 (set-background-color "#222")
@@ -235,6 +260,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (add-to-list 'auto-mode-alist '("\\.jsx$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.json$" . typescript-mode))
 
 (require 'python-mode)
 
