@@ -13,10 +13,12 @@
         eslint-rc
         lsp-mode
         dockerfile-mode
+        protobuf-mode
         python-mode
         company
         treemacs
         lsp-treemacs
+        dotenv-mode
         docker-compose-mode))
 
 ; activate all the packages
@@ -319,7 +321,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
  '(package-selected-packages
-   '(tide flycheck docker-compose-mode dockerfile-mode swift-mode terraform-mode lsp-mode eslint-rc web-mode cl go-mode))
+   '(dotenv-mode protobuf-mode tide flycheck docker-compose-mode dockerfile-mode swift-mode terraform-mode lsp-mode eslint-rc web-mode cl go-mode))
  '(python-indent-offset 2)
  '(safe-local-variable-values
    '((eval let
