@@ -7,6 +7,8 @@
       '(flycheck
         tide
         go-mode
+        rust-mode
+        flycheck-rust
         typescript-mode
         web-mode
         terraform-mode
@@ -301,6 +303,9 @@ This may not do the correct thing in presence of links. If it does not find FILE
   (funcall orig-fun))
 
 (advice-add 'lsp--before-save :around #'lsp--eslint-before-save)
+
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
