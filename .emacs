@@ -156,20 +156,20 @@
 (add-hook 'go-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'python-mode-hook 'add-trailing-whitespace-on-write-hook)
 
-; Default compile commands.
-; Find the nearest makefile and use that.
-; Courtesy of http://emacswiki.org/emacs/CompileCommand#toc5
 (defun get-closest-pathname (file)
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
 This may not do the correct thing in presence of links. If it does not find FILE, then it shall return
 '/'"
-  (let ((root (expand-file-name "/"))) ; the win32 builds should translate this correctly
-    (expand-file-name (cl-loop
-			for d = default-directory then (expand-file-name ".." d)
-			if (file-exists-p (expand-file-name file d))
-			return d
-			if (equal d root)
-			return "/"))))
+  (get-closest-pathname-helper file default-directory))
+  
+(defun get-closest-pathname-helper (file current-dir)
+  (if (file-exists-p (expand-file-name file current-dir))
+      current-dir
+    (let ((parent-dir (expand-file-name ".." current-dir)))
+      (if (>= (length parent-dir) (length current-dir))
+          ; (expand-file-name ".." "/") will expand to a longer directory, so stop.
+          current-dir
+        (get-closest-pathname-helper file parent-dir)))))
 
 (defun max-element (arr scorer)
   (defun helper(rest current-max)
@@ -289,7 +289,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (require 'lsp-mode)
 (add-hook 'typescript-mode-hook #'lsp)
 (add-hook 'web-mode-hook #'lsp)
-(add-hook 'terraform-mode-hook #'lsp)
 (add-hook 'tiltfile-mode-hook #'lsp)
 
 ;; We usually edit monorepos where file watching won't work well.
