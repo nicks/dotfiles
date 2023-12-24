@@ -1,12 +1,9 @@
-
-export JAVA_HOME="$(/usr/libexec/java_home)"
-export JAVA7_HOME="$JAVA_HOME"
-export EC2_HOME="/usr/local/Library/LinkedKegs/ec2-api-tools/jars"
+alias k="kubectl"
+alias d="docker"
+alias e="emacs"
 export EDITOR="emacs"
-export PATH=/Users/nick/bin:/usr/local/share/npm/bin:~/git/internal/scripts:$JAVA_HOME/bin:$PATH
-export NODE_PATH="/usr/local/share/npm/lib/node_modules"
+
+mkdir -p "$HOME/.terraform.d/plugin-cache"
+export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
 
 alias e=emacs
-
-source "/usr/share/git-core/git-completion.bash"
-source start-sshagent.sh
