@@ -162,7 +162,7 @@
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
 This may not do the correct thing in presence of links. If it does not find FILE, then it shall return
 '/'"
-  (get-closest-pathname-helper file default-directory))
+  (get-closest-pathname-helper file (expand-file-name default-directory)))
   
 (defun get-closest-pathname-helper (file current-dir)
   (if (file-exists-p (expand-file-name file current-dir))
@@ -233,7 +233,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
-(set-face-attribute 'default nil :height 200)
+(set-face-attribute 'default nil :height 160)
 (set-size-according-to-resolution)
 
 ; Keyboard shortcuts
