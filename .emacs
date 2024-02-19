@@ -243,6 +243,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cj" 'next-error)
 (global-set-key "\C-ck" 'previous-error)
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
+(global-set-key "\C-cr" 'query-replace-regexp)
 
 (require 'json)
 
