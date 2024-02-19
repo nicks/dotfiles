@@ -233,7 +233,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
-(set-face-attribute 'default nil :height 160)
+(set-face-attribute 'default nil :height 200)
 (set-size-according-to-resolution)
 
 ; Keyboard shortcuts
@@ -253,9 +253,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 ;; Colorize compilation buffer.
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region compilation-filter-start (point))
-  (toggle-read-only))
+  (ansi-color-apply-on-region compilation-filter-start (point-max)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (require 'typescript-mode)
