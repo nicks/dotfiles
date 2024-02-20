@@ -288,8 +288,8 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (add-to-list 'auto-mode-alist '("\\.tf$" . terraform-mode))
 
 (require 'lsp-mode)
-(add-hook 'typescript-mode-hook #'lsp)
-(add-hook 'web-mode-hook #'lsp)
+;;(add-hook 'typescript-mode-hook #'lsp)
+;;(add-hook 'web-mode-hook #'lsp)
 (add-hook 'tiltfile-mode-hook #'lsp)
 
 ;; We usually edit monorepos where file watching won't work well.
@@ -344,3 +344,4 @@ This may not do the correct thing in presence of links. If it does not find FILE
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'dired-find-alternate-file 'disabled nil)
