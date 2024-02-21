@@ -182,6 +182,15 @@ input "type:keyboard" {
     # Show the next scratchpad window or hide the focused scratchpad window.
     # If there are multiple scratchpad windows, this command cycles through them.
     bindsym $mod+minus scratchpad show
+
+#
+# Screenshots:
+#
+
+    # Screenshots save to ~/Pictures/YYYY-MM-DD
+    bindsym $mod+p exec grimshot save window
+    bindsym $mod+Shift+p exec grimshot save area
+    
 #
 # Resizing containers:
 #
@@ -216,6 +225,7 @@ bar {
     status_command i3status
 }
 
-default_border none 
+default_border none
+exec mako
 
 include /etc/sway/config.d/*
