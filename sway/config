@@ -237,4 +237,7 @@ bar {
 default_border none
 exec mako
 
+# Only focus on click.
+focus_follows_mouse no
+
 include /etc/sway/config.d/*
