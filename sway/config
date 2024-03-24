@@ -221,7 +221,7 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
-bindsym $mod+Ctrl+l exec swaylock
+bindsym $mod+Ctrl+l exec ~/.config/sway/lock.sh
 
 #
 # Status Bar:
