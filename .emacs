@@ -19,6 +19,7 @@
         python-mode
         company
         treemacs
+        lua-mode
         lsp-treemacs
         dotenv-mode
         docker-compose-mode))
@@ -157,6 +158,8 @@
 (add-hook 'go-mode-hook 'setup-godef-jump)
 (add-hook 'go-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'python-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'yaml-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'lua-mode-hook 'add-trailing-whitespace-on-write-hook)
 
 (defun get-closest-pathname (file)
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
