@@ -17,4 +17,4 @@ clients:
 deliminator: " "
 default_icon: dot-circle
 default:
-  new_desktop: true
+  new_desktop: false
