@@ -22,6 +22,8 @@
         lua-mode
         lsp-treemacs
         dotenv-mode
+        gptel
+        elysium
         docker-compose-mode))
 
 ; activate all the packages
@@ -160,6 +162,7 @@
 (add-hook 'python-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'yaml-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'lua-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'typescript-mode-hook 'add-trailing-whitespace-on-write-hook)
 
 (defun get-closest-pathname (file)
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
@@ -239,14 +242,43 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (set-face-attribute 'default nil :height 160)
 (set-size-according-to-resolution)
 
+(defun smerge-or-next-error ()
+  "Run `smerge-next` if in `smerge-mode`, otherwise run `next-error`."
+  (interactive)
+  (if (and (boundp 'smerge-mode) smerge-mode)
+      (smerge-next)
+    (next-error)))
+
+(defun smerge-or-prev-error ()
+  "Run `smerge-next` if in `smerge-mode`, otherwise run `next-error`."
+  (interactive)
+  (if (and (boundp 'smerge-mode) smerge-mode)
+      (smerge-prev)
+    (previous-error)))
+
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
 (global-set-key "\C-ct" 'treemacs)
-(global-set-key "\C-cj" 'next-error)
-(global-set-key "\C-ck" 'previous-error)
+(global-set-key "\C-cj" 'smerge-or-next-error)
+(global-set-key "\C-ck" 'smerge-or-prev-error)
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
 (global-set-key "\C-cr" 'query-replace-regexp)
+(global-set-key "\C-ca" 'gptel-add)
+(global-set-key "\C-cs" 'gptel-send)
+(global-set-key "\C-cd" 'gptel)
+(global-set-key "\C-cq" 'elysium-query)
+(global-set-key "\C-cu" 'smerge-keep-upper)
+(global-set-key "\C-cl" 'smerge-keep-lower)
+(global-set-key "\C-cm" 'smerge-mode)
+
+; set up auto smerge mode
+(defun sm-try-smerge ()
+  (save-excursion
+  	(goto-char (point-min))
+  	(when (re-search-forward "^<<<<<<< " nil t)
+  	  (smerge-mode 1))))
+(add-hook 'find-file-hook 'sm-try-smerge t)
 
 (require 'json)
 
@@ -321,6 +353,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
      (arglist-intro . c-lineup-arglist-intro-after-paren)))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
+ '(gptel-model 'gpt-4o-mini)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
  '(lsp-eslint-auto-fix-on-save t)
