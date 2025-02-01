@@ -91,6 +91,7 @@
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
 (setq gofmt-command "goimports")
+(setq gofmt-args '("-local" "github.com/tilt-dev"))
 
 ;; json formatting
 ;; http://irreal.org/blog/?p=354
