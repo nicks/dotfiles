@@ -146,6 +146,13 @@
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
 
+;; go-staticcheck is really slow
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(go-staticcheck)))
+
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
 ;; https://github.com/purcell/exec-path-from-shell
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
@@ -272,6 +279,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cu" 'smerge-keep-upper)
 (global-set-key "\C-cl" 'smerge-keep-lower)
 (global-set-key "\C-cm" 'smerge-mode)
+(global-set-key "\C-cf" 'grep-find)
 
 ; set up auto smerge mode
 (defun sm-try-smerge ()
@@ -337,9 +345,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
   (funcall orig-fun))
 
 (advice-add 'lsp--before-save :around #'lsp--eslint-before-save)
-
-(with-eval-after-load 'rust-mode
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
