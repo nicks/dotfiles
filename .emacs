@@ -146,10 +146,6 @@
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
 
-;; go-staticcheck is really slow
-(with-eval-after-load 'flycheck
-  (setq-default flycheck-disabled-checkers '(go-staticcheck)))
-
 (with-eval-after-load 'rust-mode
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
@@ -359,6 +355,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
      (arglist-intro . c-lineup-arglist-intro-after-paren)))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
+ '(flycheck-disabled-checkers '(go-staticcheck go-golint))
  '(gptel-model 'gpt-4o-mini)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
