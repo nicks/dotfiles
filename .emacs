@@ -6,6 +6,7 @@
 (setq package-list
       '(flycheck
         tide
+        vterm
         go-mode
         rust-mode
         flycheck-rust
@@ -18,12 +19,10 @@
         protobuf-mode
         python-mode
         company
-        treemacs
         lua-mode
         lsp-treemacs
         dotenv-mode
         gptel
-        elysium
         docker-compose-mode))
 
 ; activate all the packages
@@ -38,30 +37,26 @@
   (unless (package-installed-p package)
     (package-install package)))
 
-; install straight.el, a package manager that
-; we need to install copilot
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'use-package)
-
 ; install github copilot hooks
 (use-package copilot
-  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :ensure t)
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
+  :config
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
+; install aidermacs
+(use-package aidermacs
+  :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
+  :bind (("C-c p" . aidermacs-transient-menu))
+
+  :config
+  ; Enable minor mode for Aider files
+  (aidermacs-setup-minor-mode))
 
 ; UI
 (transient-mark-mode 1)
@@ -350,27 +345,28 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
  '(c-basic-offset 2)
  '(c-offsets-alist
-   '((statement-cont . +)
-     (arglist-intro . c-lineup-arglist-intro-after-paren)))
+   '((statement-cont . +) (arglist-intro . c-lineup-arglist-intro-after-paren)))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
  '(css-indent-offset 2)
  '(flycheck-disabled-checkers '(go-staticcheck go-golint))
- '(gptel-model 'gpt-4o-mini)
+ '(gptel-model 'gpt-4o)
  '(grep-find-command
-   '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\"" . 49))
+   '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\""
+     . 49))
  '(lsp-eslint-auto-fix-on-save t)
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
  '(package-selected-packages
-   '(dotenv-mode protobuf-mode tide flycheck docker-compose-mode dockerfile-mode swift-mode terraform-mode lsp-mode eslint-rc web-mode cl go-mode))
+   '(aidermacs cl docker-compose-mode dockerfile-mode dotenv-mode eslint-rc
+               flycheck go-mode lsp-mode protobuf-mode swift-mode terraform-mode
+               tide web-mode))
  '(python-indent-offset 2)
  '(safe-local-variable-values
-   '((eval let
-           ((project-directory
-             (car
-              (dir-locals-find-file default-directory))))
+   '((eval let ((project-directory (car (dir-locals-find-file default-directory))))
            (setq lsp-clients-typescript-server-args
-                 `("--tsserver-path" ,(concat project-directory ".yarn/sdks/typescript/bin/tsserver")
+                 `("--tsserver-path"
+                   ,(concat project-directory
+                            ".yarn/sdks/typescript/bin/tsserver")
                    "--stdio")))))
  '(show-paren-mode t)
  '(typescript-indent-level 2)
