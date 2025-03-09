@@ -41,9 +41,7 @@
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
             :rev :newest
-            :branch "main")
-  :config
-  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+            :branch "main"))
 
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
@@ -56,7 +54,9 @@
 
   :config
   ; Enable minor mode for Aider files
-  (aidermacs-setup-minor-mode))
+  (aidermacs-setup-minor-mode)
+  ;; Use vterm backend (default is comint)
+  (setq aidermacs-backend 'vterm))
 
 ; UI
 (transient-mark-mode 1)
@@ -347,6 +347,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(c-offsets-alist
    '((statement-cont . +) (arglist-intro . c-lineup-arglist-intro-after-paren)))
  '(compilation-environment '("TERM=\"xterm-256color\"" ""))
+ '(copilot-indent-offset-warning-disable t)
  '(css-indent-offset 2)
  '(flycheck-disabled-checkers '(go-staticcheck go-golint))
  '(gptel-model 'gpt-4o)
