@@ -34,8 +34,8 @@
 (package-initialize)
 
 ; install the missing packages
-(unless
-    (cl-some (lambda (x) (package-installed-p x)) package-list)
+(if
+    (cl-some (lambda (x) (not (package-installed-p x))) package-list)
   (package-refresh-contents))
 (dolist (package package-list)
   (unless (package-installed-p package)
