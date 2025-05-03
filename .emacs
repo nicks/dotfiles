@@ -1,8 +1,10 @@
 ;;; .emacs
 
+(require 'cl-lib)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
+; packages to install
 (setq package-list
       '(flycheck
         tide
@@ -20,19 +22,21 @@
         python-mode
         company
         lua-mode
-        lsp-treemacs
         dotenv-mode
         gptel
+        aider
+        forge
+        magit
+        sqlite3
         docker-compose-mode))
 
 ; activate all the packages
 (package-initialize)
 
-; fetch the list of packages available
-(unless package-archive-contents
-  (package-refresh-contents))
-
 ; install the missing packages
+(unless
+    (cl-some (lambda (x) (package-installed-p x)) package-list)
+  (package-refresh-contents))
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
@@ -43,20 +47,12 @@
             :rev :newest
             :branch "main"))
 
+; authinfo creds for forge
+(setq auth-sources '("~/.authinfo"))
+
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-
-; install aidermacs
-(use-package aidermacs
-  :vc (:url "https://github.com/MatthewZMD/aidermacs" :rev :newest)
-  :bind (("C-c p" . aidermacs-transient-menu))
-
-  :config
-  ; Enable minor mode for Aider files
-  (aidermacs-setup-minor-mode)
-  ;; Use vterm backend (default is comint)
-  (setq aidermacs-backend 'vterm))
 
 ; UI
 (transient-mark-mode 1)
@@ -270,6 +266,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cl" 'smerge-keep-lower)
 (global-set-key "\C-cm" 'smerge-mode)
 (global-set-key "\C-cf" 'grep-find)
+(global-set-key "\C-cr" 'aider-run-aider)
 
 ; set up auto smerge mode
 (defun sm-try-smerge ()
@@ -358,9 +355,9 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
  '(package-selected-packages
-   '(aidermacs cl docker-compose-mode dockerfile-mode dotenv-mode eslint-rc
-               flycheck go-mode lsp-mode protobuf-mode swift-mode terraform-mode
-               tide web-mode))
+   '(aider cl docker-compose-mode dockerfile-mode dotenv-mode eslint-rc flycheck
+           forge gh go-mode lsp-mode magit-gh-pulls protobuf-mode sqlite3
+           swift-mode terraform-mode tide web-mode))
  '(python-indent-offset 2)
  '(safe-local-variable-values
    '((eval let ((project-directory (car (dir-locals-find-file default-directory))))
