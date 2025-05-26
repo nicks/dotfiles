@@ -1,0 +1,2 @@
+SUBSYSTEM=="input", ENV{ID_BUS}=="usb", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="remove", RUN+="/home/nick/src/dotfiles/bin/keyboard-internal-enable.sh"
+SUBSYSTEM=="input", ENV{ID_BUS}=="usb", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="add", RUN+="/home/nick/src/dotfiles/bin/keyboard-internal-disable.sh"
