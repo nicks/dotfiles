@@ -258,15 +258,12 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-ck" 'smerge-or-prev-error)
 (global-set-key "\C-cw" 'set-size-according-to-resolution)
 (global-set-key "\C-cr" 'query-replace-regexp)
-(global-set-key "\C-ca" 'gptel-add-file)
-(global-set-key "\C-cs" 'gptel-add)
 (global-set-key "\C-cd" 'gptel)
-(global-set-key "\C-cq" 'gptel-context-remove-all)
 (global-set-key "\C-cu" 'smerge-keep-upper)
 (global-set-key "\C-cl" 'smerge-keep-lower)
 (global-set-key "\C-cm" 'smerge-mode)
 (global-set-key "\C-cf" 'grep-find)
-(global-set-key "\C-cr" 'aider-run-aider)
+(global-set-key "\C-ca" 'aider-run-aider)
 
 ; set up auto smerge mode
 (defun sm-try-smerge ()
@@ -347,7 +344,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(copilot-indent-offset-warning-disable t)
  '(css-indent-offset 2)
  '(flycheck-disabled-checkers '(go-staticcheck go-golint))
- '(gptel-model 'gpt-4o)
+ '(gptel-model 'gpt-4o-mini)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\""
      . 49))
