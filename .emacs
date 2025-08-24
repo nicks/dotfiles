@@ -36,16 +36,31 @@
 ; install the missing packages
 (if
     (cl-some (lambda (x) (not (package-installed-p x))) package-list)
-  (package-refresh-contents))
+    (package-refresh-contents))
+
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
 
 ; install github copilot hooks
+(require 'vc-git)
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
             :rev :newest
             :branch "main"))
+
+;; for eat terminal backend (claude code)
+(use-package eat :ensure t)
+
+;; for vterm terminal backend (claude code)
+(use-package vterm :ensure t)
+
+; claude code client
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el"
+	    :rev :newest)
+  :config (claude-code-mode)
+  :bind-keymap ("C-c t" . claude-code-command-map))
 
 ; authinfo creds for forge
 (setq auth-sources '("~/.authinfo"))
@@ -265,6 +280,9 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cf" 'grep-find)
 (global-set-key "\C-ca" 'aider-run-aider)
 
+(setq gptel-model 'gpt-4.1
+      gptel-backend (gptel-make-gh-copilot "Copilot"))
+
 ; set up auto smerge mode
 (defun sm-try-smerge ()
   (save-excursion
@@ -344,17 +362,16 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(copilot-indent-offset-warning-disable t)
  '(css-indent-offset 2)
  '(flycheck-disabled-checkers '(go-staticcheck go-golint))
- '(gptel-model 'gpt-4o-mini)
  '(grep-find-command
    '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\""
      . 49))
  '(lsp-eslint-auto-fix-on-save t)
  '(lsp-eslint-enable t)
  '(lsp-eslint-run "onSave")
- '(package-selected-packages
-   '(aider cl docker-compose-mode dockerfile-mode dotenv-mode eslint-rc flycheck
-           forge gh go-mode lsp-mode magit-gh-pulls protobuf-mode sqlite3
-           swift-mode terraform-mode tide web-mode))
+ '(package-selected-packages '(aidermacs claude-code copilot))
+ '(package-vc-selected-packages
+   '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
+     (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(python-indent-offset 2)
  '(safe-local-variable-values
    '((eval let ((project-directory (car (dir-locals-find-file default-directory))))
