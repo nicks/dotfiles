@@ -1,0 +1,7 @@
+#!/bin/bash
+ 
+if [[ "$(uname)" == "Darwin" ]]; then
+  osascript -e 'tell app "System Events" to shut down'
+else
+  shutdown -h 0 
+fi

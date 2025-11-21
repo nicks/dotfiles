@@ -1,0 +1,133 @@
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="Hack Nerd Font:Bold:17.0"
+  label.font="Hack Nerd Font:Bold:14.0"
+  icon.color=0xffffffff
+  label.color=0xffffffff
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+## Sketchybar config
+
+sketchybar --add event aerospace_workspace_change
+
+sketchybar --add item aerospace left \
+           --set aerospace icon.drawing=off script="$PLUGIN_DIR/aerospace_item.sh" \
+           --subscribe aerospace aerospace_workspace_change
+
+##### Adding Left Items #####
+# We add some regular items to the left side of the bar, where
+# only the properties deviating from the current defaults need to be set
+
+sketchybar --add item chevron left \
+           --set chevron icon= label.drawing=off \
+           --add item front_app left \
+           --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+##### Adding Right Items #####
+
+sketchybar -m --add item battery right \
+              --set battery update_freq=3 \
+                            script="~/.config/sketchybar/plugins/power.sh"
+
+sketchybar --add item clock right \
+           --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh"
+
+sketchybar -m --add item disk_label right \
+              --set disk_label label.font="Hack Nerd Font:Regular:12.0" \
+                               label=SSD \
+                               y_offset=5 \
+                               width=0 \
+\
+              --add item disk_percentage right \
+              --set disk_percentage label.font="Hack Nerd Font:Regular:12.0" \
+                                    y_offset=-4 \
+                                    update_freq=1 \
+                                    script="~/.config/sketchybar/plugins/disk.sh"
+
+sketchybar -m --add item ram_label right \
+              --set ram_label label.font="Hack Nerd Font:Regular:12.0" \
+                               label=RAM \
+                               y_offset=5 \
+                               width=0 \
+\
+              --add item ram_percentage right \
+              --set ram_percentage label.font="Hack Nerd Font:Regular:12.0" \
+                                    y_offset=-4 \
+                                    update_freq=1 \
+                                    script="~/.config/sketchybar/plugins/ram.sh"
+
+sketchybar -m --add item cpu_label right \
+              --set cpu_label label.font="Hack Nerd Font:Regular:12.0" \
+                    label=CPU \
+                    y_offset=5 \
+                    width=0 \
+\
+              --add item cpu_percent right \
+              --set cpu_percent label.font="Hack Nerd Font:Regular:12.0" \
+                    y_offset=-4 \
+                    update_freq=1 \
+                    script="~/.config/sketchybar/plugins/cpu.sh"
+
+sketchybar -m --add item network_up right \
+              --set network_up label.font="Hack Nerd Font:Regular:12.0" \
+                               icon.font="Hack Nerd Font:Regular:12.0" \
+                               icon= \
+                               icon.highlight_color=0xff8b0a0d \
+                               y_offset=5 \
+                               width=0 \
+                               update_freq=1 \
+                               script="~/.config/sketchybar/plugins/network.sh" \
+\
+              --add item network_down right \
+              --set network_down label.font="Hack Nerd Font:Regular:12.0" \
+                                 icon.font="Hack Nerd Font:Regular:12.0" \
+                                 icon= \
+                                 icon.highlight_color=0xff10528c \
+                                 y_offset=-4 \
+                                 update_freq=1 \--add item network_name right \
+              --set network_name label="No Network"
+              
+
+sketchybar -m --add item stats_logo right \
+              --set stats_logo icon=
+
+sketchybar -m --add bracket stats disk_label \
+                                  disk_percentage \
+                                  ram_label \
+                                  ram_percentage \
+                                  cpu_label \
+                                  cpu_percent \
+                                  network_up \
+                                  network_down \
+                                  network_name \
+\
+               --set stats background.color=0xff3B4252 \
+                           background.corner_radius=5 \
+                           background.height=30 \
+                           background.padding_right=10
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
