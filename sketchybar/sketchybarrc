@@ -33,7 +33,7 @@ sketchybar --default "${default[@]}"
 sketchybar --add event aerospace_workspace_change
 
 sketchybar --add item aerospace left \
-           --set aerospace icon.drawing=off script="$PLUGIN_DIR/aerospace_item.sh" \
+           --set aerospace width=0 script="$PLUGIN_DIR/aerospace_item.sh" \
            --subscribe aerospace aerospace_workspace_change
 
 ##### Adding Left Items #####
@@ -109,10 +109,6 @@ sketchybar -m --add item network_up right \
                                  y_offset=-4 \
                                  update_freq=1 \--add item network_name right \
               --set network_name label="No Network"
-              
-
-sketchybar -m --add item stats_logo right \
-              --set stats_logo icon=
 
 sketchybar -m --add bracket stats disk_label \
                                   disk_percentage \
