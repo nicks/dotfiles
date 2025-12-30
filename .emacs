@@ -27,6 +27,7 @@
         aider
         forge
         magit
+        exec-path-from-shell
         sqlite3
         docker-compose-mode))
 
@@ -47,7 +48,9 @@
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
             :rev :newest
-            :branch "main"))
+            :branch "main")
+  :init
+  (setq copilot-indent-offset-warning-disable t))
 
 ;; for eat terminal backend (claude code)
 (use-package eat :ensure t)
@@ -158,6 +161,7 @@
 ;; https://github.com/purcell/exec-path-from-shell
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
+(require 'exec-path-from-shell)
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
@@ -353,36 +357,12 @@ This may not do the correct thing in presence of links. If it does not find FILE
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
- '(backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
- '(c-basic-offset 2)
- '(c-offsets-alist
-   '((statement-cont . +) (arglist-intro . c-lineup-arglist-intro-after-paren)))
- '(compilation-environment '("TERM=\"xterm-256color\"" ""))
- '(copilot-indent-offset-warning-disable t)
- '(css-indent-offset 2)
- '(flycheck-disabled-checkers '(go-staticcheck go-golint))
- '(grep-find-command
-   '("find . -type f -exec grep --color -nH --null -e  \\{\\} + | cut -c1-\"$COLUMNS\""
-     . 49))
- '(lsp-eslint-auto-fix-on-save t)
- '(lsp-eslint-enable t)
- '(lsp-eslint-run "onSave")
- '(package-selected-packages '(aidermacs claude-code copilot))
+ '(c-basic-offset 'set-from-style)
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
- '(python-indent-offset 2)
- '(safe-local-variable-values
-   '((eval let ((project-directory (car (dir-locals-find-file default-directory))))
-           (setq lsp-clients-typescript-server-args
-                 `("--tsserver-path"
-                   ,(concat project-directory
-                            ".yarn/sdks/typescript/bin/tsserver")
-                   "--stdio")))))
- '(show-paren-mode t)
- '(typescript-indent-level 2)
- '(vc-follow-symlinks t))
+ '(typescript-indent-level 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
