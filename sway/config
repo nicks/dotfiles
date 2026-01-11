@@ -129,14 +129,14 @@ input "type:keyboard" {
 #
     # Switch to workspace
     # '100' is a silly convention to create new windows.
-    bindsym $mod+1 workspace prev
-    bindsym $mod+2 workspace next
-    bindsym $mod+n workspace exec ~/.cargo/bin/sway-new-workspace open
+    bindsym $mod+u workspace prev
+    bindsym $mod+o workspace next
+    bindsym $mod+t workspace exec ~/.cargo/bin/sway-new-workspace open
     
     # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace prev; workspace prev;
-    bindsym $mod+Shift+2 move container to workspace next; workspace next;
-    bindsym $mod+Shift+n exec ~/.cargo/bin/sway-new-workspace move;
+    bindsym $mod+Shift+u move container to workspace prev; workspace prev;
+    bindsym $mod+Shift+o move container to workspace next; workspace next;
+    bindsym $mod+Shift+t exec ~/.cargo/bin/sway-new-workspace move;
     bindsym $mod+Shift+d exec ~/.cargo/bin/sway-new-workspace open; exec $menu;
     
 #
