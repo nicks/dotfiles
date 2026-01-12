@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -u
+
+# Usage: git start <branch-name>
+if [ "$#" -ne 1 ] ; then
+    echo -e "\033[1;31mUsage: git start <branch-name>\033[0m"
+    exit 1
+fi
+
+git diff --quiet && git diff --cached --quiet
+if [ $? -ne 0 ] ; then
+    echo -e "\033[1;31mYou have uncommitted changes. Please commit or stash them before running git-sync.\033[0m"
+    exit 1
+fi
+
+set -e
+
+username=$(gh api user --jq .login)
+if [ -z "$username" ] ; then
+    echo -e "\033[1;31mCould not determine GitHub username. Make sure you are logged in with 'gh auth login'.\033[0m"
+    exit 1
+fi
+
+branch_name="$username/$1"
+main=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git checkout "$main"
+git sync
+git checkout -b "$branch_name"
