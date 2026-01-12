@@ -14,13 +14,19 @@ if [ $? -ne 0 ] ; then
     exit 1
 fi
 
-set -e
-
 username=$(gh api user --jq .login)
 if [ -z "$username" ] ; then
     echo -e "\033[1;31mCould not determine GitHub username. Make sure you are logged in with 'gh auth login'.\033[0m"
     exit 1
 fi
+
+# check if our ssh-agent has our key loaded
+ssh-add -l | grep -q "no identities"
+if [ $? -eq 0 ] ; then
+    ssh-add || exit 1
+fi
+
+set -e
 
 branch_name="$username/$1"
 main=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')

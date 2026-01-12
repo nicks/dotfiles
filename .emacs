@@ -362,6 +362,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
+ '(sh-basic-offset 2)
  '(typescript-indent-level 2))
 
 (custom-set-faces
