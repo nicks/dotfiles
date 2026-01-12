@@ -24,19 +24,16 @@
 
     "modules-left": [
         "sway/workspaces",
-        "sway/mode"
+        "sway/window"
     ],
     "modules-center": [
-        "sway/window"
     ],
     "modules-right": [
         "network",
         "memory",
         "cpu",
-        "temperature",
-        //"custom/keyboard-layout",
+        "disk",
         "battery",
-        "tray",
         "clock#date",
         "clock#time"
     ],
@@ -74,13 +71,13 @@
 
     "clock#date": {
       "interval": 10,
-      "format": "  {:%e %b %Y}", // Icon: calendar-alt
+      "format": "{:%e %b %Y}", // Icon: calendar-alt
       "tooltip-format": "{:%e %B %Y}"
     },
 
     "cpu": {
         "interval": 5,
-        "format": "  {usage}% ({load})", // Icon: microchip
+        "format": "CPU {usage}% ({load})",
         "states": {
           "warning": 70,
           "critical": 90
@@ -88,22 +85,21 @@
         "on-click": "alacritty -e htop"
     },
 
-    "custom/keyboard-layout": {
-      "exec": "swaymsg -t get_inputs | grep -m1 'xkb_active_layout_name' | cut -d '\"' -f4",
-      // Interval set only as a fallback, as the value is updated by signal
-      "interval": 30,
-      "format": "  {}", // Icon: keyboard
-      // Signal sent by Sway key binding (~/.config/sway/key-bindings)
-      "signal": 1, // SIGHUP
-      "tooltip": false
-    },
-
     "memory": {
         "interval": 5,
-        "format": "  {}%", // Icon: memory
+        "format": "RAM {}%",
         "states": {
             "warning": 70,
             "critical": 90
+        }
+    },
+
+    "disk": {
+        "interval": 60,
+        "format": "SSD {percentage_used}% ({free} free)",
+        "states": {
+            "warning": 85,
+            "critical": 95
         }
     },
 
@@ -136,24 +132,7 @@
             "default": ""
         }
     },
-
-    //"pulseaudio": {
-    //    //"scroll-step": 1,
-    //    "format": "{icon}  {volume}%",
-    //    "format-bluetooth": "{icon}  {volume}%",
-    //    "format-muted": "",
-    //    "format-icons": {
-    //        "headphones": "",
-    //        "handsfree": "",
-    //        "headset": "",
-    //        "phone": "",
-    //        "portable": "",
-    //        "car": "",
-    //        "default": ["", ""]
-    //    },
-    //    "on-click": "pavucontrol"
-    //},
-
+    
     "temperature": {
       "critical-threshold": 80,
       "interval": 5,
@@ -166,11 +145,6 @@
           ""  // Icon: temperature-full
       ],
       "tooltip": true
-    },
-
-    "tray": {
-        "icon-size": 21,
-        "spacing": 10
     }
 
 }
