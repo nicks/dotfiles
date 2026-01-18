@@ -10,3 +10,6 @@
   path = .gitconfig-docker
 [includeIf "gitdir:tilt-dev/"]
   path = .gitconfig-docker
+
+[push]
+	autoSetupRemote = true

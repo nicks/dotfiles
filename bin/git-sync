@@ -14,6 +14,12 @@ if [ -z "$main" ] ; then
     exit 1
 fi
 
+# check if our ssh-agent has our key loaded
+ssh-add -l | grep -q "no identities"
+if [ $? -eq 0 ] ; then
+    ssh-add
+fi
+
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 git checkout "$main"
 

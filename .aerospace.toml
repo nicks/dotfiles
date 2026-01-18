@@ -38,14 +38,6 @@ outer.right = 0
 [mode.main.binding]
     cmd-h = [] # Disable "hide application"
     cmd-alt-h = [] # Disable "hide others"
-    
-    # See: https://nikitabobko.github.io/AeroSpace/goodies#open-a-new-window-with-applescript
-    alt-enter = '''exec-and-forget osascript -e '
-    tell application "Terminal"
-        do script
-        activate
-    end tell'
-    '''
 
     # kill focused window
     alt-shift-q = 'close'
@@ -93,10 +85,10 @@ outer.right = 0
     alt-w = 'layout h_accordion' # 'layout tabbed' in i3
     alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
 
-    alt-u = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-prev.sh'
-    alt-o = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-next.sh'
+    alt-u = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-nav.sh prev focus'
+    alt-o = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-nav.sh next focus'
 
-    alt-shift-u = 'move-node-to-monitor --wrap-around prev --focus-follows-window'
-    alt-shift-o = 'move-node-to-monitor --wrap-around next --focus-follows-window'
+    alt-shift-u = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-nav.sh prev move'
+    alt-shift-o = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-nav.sh next move'
 
     alt-shift-c = 'reload-config'
