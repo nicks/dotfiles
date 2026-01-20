@@ -165,7 +165,6 @@
 (add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'java-mode-hook 'set-java-indentation-hook)
 (add-hook 'makefile-bsdmake-mode-hook 'set-indent-tabs-mode)
-(add-hook 'grep-mode-hook 'clear-search-path)
 (add-hook 'go-mode-hook 'add-gofmt-hook)
 (add-hook 'go-mode-hook 'setup-godef-jump)
 (add-hook 'go-mode-hook 'add-trailing-whitespace-on-write-hook)
@@ -272,6 +271,15 @@ This may not do the correct thing in presence of links. If it does not find FILE
       (smerge-prev)
     (previous-error)))
 
+; grep functions
+(defun interactive-rgrep (pattern)
+  "Interactive grep with pattern input, searching all files in current buffer's directory.
+PATTERN is the search pattern to use with rgrep."
+  (interactive
+   (list (read-string "Search pattern: ")))
+  (let ((default-directory (file-name-directory (or (buffer-file-name) default-directory))))
+    (rgrep pattern "*" default-directory)))
+
 ; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
@@ -283,7 +291,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cu" 'smerge-keep-upper)
 (global-set-key "\C-cl" 'smerge-keep-lower)
 (global-set-key "\C-cm" 'smerge-mode)
-(global-set-key "\C-cf" 'rgrep)
+(global-set-key "\C-cf" 'interactive-rgrep)
 (global-set-key "\C-ca" 'aider-run-aider)
 
 (setq gptel-model 'gpt-4.1
