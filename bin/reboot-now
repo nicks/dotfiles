@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  sudo reboot
+else
+  shutdown -r 0 
+fi

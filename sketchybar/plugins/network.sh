@@ -5,6 +5,9 @@ name=$(networksetup -listallhardwareports | \
          $1 == "Hardware" && $2 == "Port:" {port=$3}
          $1 == "Device:" && $2 == iface {print port}
        ')
+if [ -z "$name" ]; then
+  name="No Internet"
+fi
 UPDOWN=$(ifstat -i "$iface" -b 0.1 1 | tail -n1)
 DOWN=$(echo $UPDOWN | awk "{ print \$1 }" | cut -f1 -d ".")
 UP=$(echo $UPDOWN | awk "{ print \$2 }" | cut -f1 -d ".")
@@ -23,6 +26,6 @@ else
   UP_FORMAT=$(echo $UP | awk '{ printf "%03.0f kbps", $1}')
 fi
 
-sketchybar -m --set network_down label="$DOWN_FORMAT" icon.highlight=$(if [ "$DOWN" -gt "0" ]; then echo "on"; else echo "off"; fi) \
-           --set network_up label="$UP_FORMAT" icon.highlight=$(if [ "$UP" -gt "0" ]; then echo "on"; else echo "off"; fi) \
+sketchybar -m --set network_down label="$DOWN_FORMAT dn" icon.highlight=$(if [ "$DOWN" -gt "0" ]; then echo "on"; else echo "off"; fi) \
+           --set network_up label="$UP_FORMAT up" icon.highlight=$(if [ "$UP" -gt "0" ]; then echo "on"; else echo "off"; fi) \
               --set network_name label="$name"
