@@ -128,10 +128,6 @@
   (save-excursion (untabify (point-min) (point-max)))
   nil)
 
-(defun clear-search-path ()
-  (set (make-local-variable 'compilation-search-path) '(nil))
-  nil)
-
 (defun set-indent-tabs-mode ()
   (set (make-local-variable 'intend-tabs-mode) t)
   nil)
@@ -177,6 +173,12 @@
 (add-hook 'yaml-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'lua-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'typescript-mode-hook 'add-trailing-whitespace-on-write-hook)
+
+;; grep customization
+(with-eval-after-load 'grep
+  (add-to-list 'grep-find-ignored-directories ".yarn")
+  (add-to-list 'grep-find-ignored-directories "node_modules")
+  (add-to-list 'grep-find-ignored-directories "vendor"))
 
 (defun get-closest-pathname (file)
   "Determine the pathname of the first instance of FILE starting from the current directory towards root.
@@ -281,7 +283,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (global-set-key "\C-cu" 'smerge-keep-upper)
 (global-set-key "\C-cl" 'smerge-keep-lower)
 (global-set-key "\C-cm" 'smerge-mode)
-(global-set-key "\C-cf" 'grep-find)
+(global-set-key "\C-cf" 'rgrep)
 (global-set-key "\C-ca" 'aider-run-aider)
 
 (setq gptel-model 'gpt-4.1
