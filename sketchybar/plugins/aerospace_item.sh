@@ -16,6 +16,7 @@ get_app_icon() {
         "Slack") echo "" ;;                   # nf-md-slack
         "Discord") echo "" ;;                 # nf-md-discord
         "Spotify") echo "" ;;                 # nf-md-spotify
+        "Docker Desktop") echo "" ;;          # nf-linux-docker
         "Music") echo "" ;;                   # nf-md-music
         "Finder") echo "" ;;                  # nf-md-folder
         "System Settings") echo "" ;;         # nf-md-cog
@@ -58,6 +59,7 @@ for sid in $(aerospace list-workspaces --all); do
         
         sketchybar --add item space.$sid left \
                    --set space.$sid \
+                   label.font="Hack Nerd Font:Regular:15.0" \
                    background.color=0x44ffffff \
                    background.corner_radius=5 \
                    background.height=20 \
