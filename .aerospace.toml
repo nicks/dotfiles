@@ -92,3 +92,4 @@ outer.right = 0
     alt-shift-o = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-nav.sh next move'
 
     alt-shift-c = 'reload-config'
+    alt-shift-b = 'exec-and-forget sketchybar --reload'
