@@ -74,9 +74,10 @@
 
 ; UI
 (transient-mark-mode 1)
-(set-background-color "#222")
-(set-foreground-color "#ddd")
-(set-face-foreground 'mode-line "firebrick")
+(set-background-color "#0a0b0f")
+(set-foreground-color "#ffffff")
+(set-face-background 'mode-line "#15161e")
+(set-face-foreground 'mode-line "#7aa2f7")
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq-default fill-column 80)
@@ -254,8 +255,9 @@ This may not do the correct thing in presence of links. If it does not find FILE
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
-(set-face-attribute 'default nil :height 160)
+(set-face-attribute 'default nil :height 170)
 (set-size-according-to-resolution)
+(set-frame-font "FiraCode Nerd Font" nil t)
 
 (defun smerge-or-next-error ()
   "Run `smerge-next` if in `smerge-mode`, otherwise run `next-error`."
