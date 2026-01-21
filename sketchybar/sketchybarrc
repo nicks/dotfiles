@@ -17,8 +17,8 @@ sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
 default=(
   padding_left=5
   padding_right=5
-  icon.font="Hack Nerd Font:Bold:17.0"
-  label.font="Hack Nerd Font:Bold:14.0"
+  icon.font="FiraCode Nerd Font:Regular:17.0"
+  label.font="FiraCode Nerd Font:Regular:14.0"
   icon.color=0xffffffff
   label.color=0xffffffff
   icon.padding_left=4
@@ -56,43 +56,43 @@ sketchybar --add item clock right \
            --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh"
 
 sketchybar -m --add item disk_label right \
-              --set disk_label label.font="Hack Nerd Font:Regular:10.0" \
+              --set disk_label label.font="FiraCode Nerd Font:Regular:10.0" \
                                label=SSD \
                                y_offset=5 \
                                width=0 \
               --add item disk_percentage right \
-              --set disk_percentage label.font="Hack Nerd Font:Regular:12.0" \
+              --set disk_percentage label.font="FiraCode Nerd Font:Regular:12.0" \
                                     y_offset=-5 \
                                     update_freq=60 \
                                     script="~/.config/sketchybar/plugins/disk.sh"
 
 sketchybar -m --add item ram_label right \
-              --set ram_label label.font="Hack Nerd Font:Regular:10.0" \
+              --set ram_label label.font="FiraCode Nerd Font:Regular:10.0" \
                                label=RAM \
                                y_offset=5 \
                                width=0 \
 \
               --add item ram_percentage right \
-              --set ram_percentage label.font="Hack Nerd Font:Regular:12.0" \
+              --set ram_percentage label.font="FiraCode Nerd Font:Regular:12.0" \
                                     y_offset=-5 \
                                     update_freq=1 \
                                     script="~/.config/sketchybar/plugins/ram.sh"
 
 sketchybar -m --add item cpu_label right \
-              --set cpu_label label.font="Hack Nerd Font:Regular:10.0" \
+              --set cpu_label label.font="FiraCode Nerd Font:Regular:10.0" \
                     label=CPU \
                     y_offset=5 \
                     width=0 \
 \
               --add item cpu_percent right \
-              --set cpu_percent label.font="Hack Nerd Font:Regular:12.0" \
+              --set cpu_percent label.font="FiraCode Nerd Font:Regular:12.0" \
                     y_offset=-5 \
                     update_freq=1 \
                     script="~/.config/sketchybar/plugins/cpu.sh"
 
 sketchybar -m --add item network_up right \
-              --set network_up label.font="Hack Nerd Font:Regular:10.0" \
-                               icon.font="Hack Nerd Font:Regular:10.0" \
+              --set network_up label.font="FiraCode Nerd Font:Regular:10.0" \
+                               icon.font="FiraCode Nerd Font:Regular:10.0" \
                                icon= \
                                icon.highlight_color=0xff8b0a0d \
                                y_offset=5 \
@@ -101,8 +101,8 @@ sketchybar -m --add item network_up right \
                                script="~/.config/sketchybar/plugins/network.sh" \
 \
               --add item network_down right \
-              --set network_down label.font="Hack Nerd Font:Regular:10.0" \
-                                 icon.font="Hack Nerd Font:Regular:10.0" \
+              --set network_down label.font="FiraCode Nerd Font:Regular:10.0" \
+                                 icon.font="FiraCode Nerd Font:Regular:10.0" \
                                  icon= \
                                  icon.highlight_color=0xff10528c \
                                  y_offset=-5 \

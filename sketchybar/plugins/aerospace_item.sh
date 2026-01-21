@@ -59,7 +59,7 @@ for sid in $(aerospace list-workspaces --all); do
         
         sketchybar --add item space.$sid left \
                    --set space.$sid \
-                   label.font="Hack Nerd Font:Regular:15.0" \
+                   label.font="FiraCode Nerd Font:Regular:15.0" \
                    background.color=0x44ffffff \
                    background.corner_radius=5 \
                    background.height=20 \
