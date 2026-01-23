@@ -28,4 +28,4 @@ fi
 
 sketchybar -m --set network_down label="$DOWN_FORMAT dn" icon.highlight=$(if [ "$DOWN" -gt "0" ]; then echo "on"; else echo "off"; fi) \
            --set network_up label="$UP_FORMAT up" icon.highlight=$(if [ "$UP" -gt "0" ]; then echo "on"; else echo "off"; fi) \
-              --set network_name label="$name"
+           --set network_name label="$name" click_script="$HOME/.config/sketchybar/plugins/open_wifi_pane.sh"
