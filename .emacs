@@ -73,6 +73,13 @@
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
 ; UI
+(add-to-list 'default-frame-alist '(tool-bar-lines . t))
+(add-to-list 'default-frame-alist '(menu-bar-lines . t))
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'initial-frame-alist '(tool-bar-lines . t))
+(add-to-list 'initial-frame-alist '(menu-bar-lines . t))
+(add-to-list 'initial-frame-alist '(ns-transparent-titlebar . t))
+
 (transient-mark-mode 1)
 (set-background-color "#0a0b0f")
 (set-foreground-color "#ffffff")
