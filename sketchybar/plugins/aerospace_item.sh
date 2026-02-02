@@ -25,7 +25,8 @@ get_app_icon() {
         "Notes") echo "" ;;                   # nf-md-note
         "Photoshop") echo "" ;;               # nf-dev-photoshop
         "Figma") echo "" ;;                   # nf-md-figma
-        "Zoom") echo "" ;;                    # nf-md-video
+        "Zoom") echo "" ;;                    # nf-md-video-camera
+        "zoom.us") echo "" ;;                 # nf-md-video-camers
         "Telegram") echo "" ;;                # nf-md-telegram
         "WhatsApp") echo "" ;;               # nf-md-whatsapp
         "Preview") echo "" ;;                 # nf-md-image
