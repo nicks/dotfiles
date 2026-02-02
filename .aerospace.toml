@@ -79,7 +79,8 @@ outer.right = 0
     alt-h = 'split horizontal'
     alt-v = 'split vertical'
 
-    alt-f = 'fullscreen'
+    # alt-f used by emacs for forward-word
+    alt-shift-f = 'fullscreen'
 
     alt-s = 'layout v_accordion' # 'layout stacking' in i3
     alt-w = 'layout h_accordion' # 'layout tabbed' in i3

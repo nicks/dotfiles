@@ -1,10 +1,10 @@
-;;; .emacs
-
 (require 'cl-lib)
 (require 'package)
+
+;; add melpa to package sources
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
-; packages to install
+;; packages to install
 (setq package-list
       '(flycheck
         tide
@@ -31,10 +31,10 @@
         sqlite3
         docker-compose-mode))
 
-; activate all the packages
+;; activate all the packages
 (package-initialize)
 
-; install the missing packages
+;; install the missing packages
 (if
     (cl-some (lambda (x) (not (package-installed-p x))) package-list)
     (package-refresh-contents))
@@ -43,7 +43,7 @@
   (unless (package-installed-p package)
     (package-install package)))
 
-; install github copilot hooks
+;; install github copilot hooks
 (require 'vc-git)
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
@@ -58,21 +58,21 @@
 ;; for vterm terminal backend (claude code)
 (use-package vterm :ensure t)
 
-; claude code client
+;; claude code client
 (use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el"
 	    :rev :newest)
   :config (claude-code-mode)
   :bind-keymap ("C-c t" . claude-code-command-map))
 
-; authinfo creds for forge
+;; authinfo creds for forge
 (setq auth-sources '("~/.authinfo"))
 
 (add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
-; UI
+;; UI
 (add-to-list 'default-frame-alist '(tool-bar-lines . t))
 (add-to-list 'default-frame-alist '(menu-bar-lines . t))
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -93,18 +93,26 @@
 
 (setq find-args "-name .git -prune -o -name node_modules -prune -o -name out -prune -o -name .svn -prune -o -type f ! -name '*class'")
 
-; shell-model
+;; follow symlinks automatically
+(setq vc-follow-symlinks t)
+
+;; shell-model
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
+
+;; emacs-plus sets CC to homebrew gcc, which breaks go builds.
+;; we want to use the system clang instead.
+(setenv "CC" "")
+(setenv "LIBRARY_PATH" "")
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
-; protobuf mode
+;; protobuf mode
 (autoload 'protobuf-mode "protobuf-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
-; go mode
+;; go mode
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
 (setq gofmt-command "goimports")
@@ -243,7 +251,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
                    ""))))
   (call-interactively 'compile))
 
-; Window resolution
+;; Window resolution
 (defun set-size-according-to-resolution ()
   (interactive)
   (if (display-graphic-p)
@@ -280,7 +288,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
       (smerge-prev)
     (previous-error)))
 
-; grep functions
+;; grep functions
 (defun interactive-rgrep (pattern)
   "Interactive grep with pattern input, searching all files in current buffer's directory.
 PATTERN is the search pattern to use with rgrep."
@@ -289,7 +297,7 @@ PATTERN is the search pattern to use with rgrep."
   (let ((default-directory (file-name-directory (or (buffer-file-name) default-directory))))
     (rgrep pattern "*" default-directory)))
 
-; Keyboard shortcuts
+;; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
 (global-set-key "\C-cj" 'smerge-or-next-error)
@@ -306,7 +314,7 @@ PATTERN is the search pattern to use with rgrep."
 (setq gptel-model 'gpt-4.1
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
-; set up auto smerge mode
+;; set up auto smerge mode
 (defun sm-try-smerge ()
   (save-excursion
   	(goto-char (point-min))
@@ -316,7 +324,7 @@ PATTERN is the search pattern to use with rgrep."
 
 (require 'json)
 
-;; Default to utf-8-unix
+;;; Default to utf-8-unix
 (prefer-coding-system 'utf-8-unix)
 (setq inhibit-eol-conversion t)
 
