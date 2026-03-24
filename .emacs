@@ -251,27 +251,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
                    ""))))
   (call-interactively 'compile))
 
-;; Window resolution
-(defun set-size-according-to-resolution ()
-  (interactive)
-  (if (display-graphic-p)
-  (progn
-    ;; use 120 char wide window for largeish displays
-    ;; and smaller 80 column windows for smaller displays
-    ;; pick whatever numbers make sense for you
-    (if (> (x-display-pixel-width) 1280)
-           (add-to-list 'default-frame-alist (cons 'width 120))
-           (add-to-list 'default-frame-alist (cons 'width 80)))
-    ;; for the height, subtract a couple hundred pixels
-    ;; from the screen height (for panels, menubars and
-    ;; whatnot), then divide by the height of a char to
-    ;; get the height we want
-    (add-to-list 'default-frame-alist
-         (cons 'height (/ (- (x-display-pixel-height) 200)
-                             (frame-char-height)))))))
-
-(set-face-attribute 'default nil :height 170)
-(set-size-according-to-resolution)
+(set-face-attribute 'default nil :height 140)
 (set-frame-font "FiraCode Nerd Font" nil t)
 
 (defun smerge-or-next-error ()
@@ -302,7 +282,6 @@ PATTERN is the search pattern to use with rgrep."
 (global-set-key "\C-cg" 'goto-line)
 (global-set-key "\C-cj" 'smerge-or-next-error)
 (global-set-key "\C-ck" 'smerge-or-prev-error)
-(global-set-key "\C-cw" 'set-size-according-to-resolution)
 (global-set-key "\C-cr" 'query-replace-regexp)
 (global-set-key "\C-cd" 'gptel)
 (global-set-key "\C-cu" 'smerge-keep-upper)
@@ -310,6 +289,12 @@ PATTERN is the search pattern to use with rgrep."
 (global-set-key "\C-cm" 'smerge-mode)
 (global-set-key "\C-cf" 'interactive-rgrep)
 (global-set-key "\C-ca" 'aider-run-aider)
+
+;; copy and paste
+;; cmd-c and cmd-v are objectively better copy/paste shortcuts
+(global-set-key (kbd "<XF86Paste>") 'yank)
+(global-set-key (kbd "<XF86Copy>") 'kill-ring-save)
+(global-set-key (kbd "<XF86Cut>") 'kill-region)
 
 (setq gptel-model 'gpt-4.1
       gptel-backend (gptel-make-gh-copilot "Copilot"))

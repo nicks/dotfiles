@@ -53,8 +53,8 @@
 #waybar {
     background: #323232;
     color: white;
-    font-family: Hack Nerd Font, Cantarell, Noto Sans, sans-serif;
-    font-size: 13px;
+    font-family: FiraCode Nerd Font, Cantarell, Noto Sans, sans-serif;
+    font-size: 12px;
 }
 
 /* Each module */
@@ -100,10 +100,6 @@
 #battery.critical.discharging {
     animation-name: blink-critical;
     animation-duration: 2s;
-}
-
-#clock {
-    font-weight: bold;
 }
 
 #cpu {

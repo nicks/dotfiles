@@ -81,11 +81,17 @@ input "type:keyboard" {
     # Start a terminal
     bindsym $mod+Return exec $term
 
+    # copy and paste more like macos
+    bindsym Mod4+c exec wtype -k XF86Copy
+    bindsym Mod4+x exec wtype -k XF86Cut
+    bindsym Mod4+v exec wtype -k XF86Paste
+
     # Kill focused window
     bindsym $mod+Shift+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
+    bindsym Mod4+space exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -138,6 +144,7 @@ input "type:keyboard" {
     bindsym $mod+Shift+o move container to workspace next; workspace next;
     bindsym $mod+Shift+t exec ~/.cargo/bin/sway-new-workspace move;
     bindsym $mod+Shift+d exec ~/.cargo/bin/sway-new-workspace open; exec $menu;
+    bindsym Mod4+Shift+space exec ~/.cargo/bin/sway-new-workspace open; exec $menu;
     
 #
 # Layout stuff:
