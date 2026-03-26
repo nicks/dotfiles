@@ -13,3 +13,5 @@
 
 [push]
 	autoSetupRemote = true
+[core]
+  excludesfile = ~/global.gitignore
