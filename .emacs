@@ -81,7 +81,7 @@
 (add-to-list 'initial-frame-alist '(ns-transparent-titlebar . t))
 
 (transient-mark-mode 1)
-(set-background-color "#0a0b0f")
+(set-background-color "#0e0f14")
 (set-foreground-color "#ffffff")
 (set-face-background 'mode-line "#15161e")
 (set-face-foreground 'mode-line "#7aa2f7")
@@ -175,7 +175,7 @@
 ;; this hopefully sets up path and other vars better
 (require 'exec-path-from-shell)
 (when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+  (run-with-idle-timer 1 nil #'exec-path-from-shell-initialize))
 
 (add-hook 'java-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)

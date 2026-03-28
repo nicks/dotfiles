@@ -18,7 +18,7 @@ decorations = "buttonless"
 padding = { x = 10, y = 10 }
 
 [colors.primary]
-background = "#0a0b0f"
+background = "#0e0f14"
 foreground = "#ffffff"
 
 [colors.normal]
