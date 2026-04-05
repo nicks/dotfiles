@@ -12,3 +12,7 @@ for dir in environment.d sway; do
         ln -s "$(pwd)/$dir" "$HOME/.config/$dir"
     fi
 done
+
+if [[ ! -f ~/.config/starship.toml ]]; then
+    ln -s "$(pwd)/starship.toml" "$HOME/.config/starship.toml"
+fi
