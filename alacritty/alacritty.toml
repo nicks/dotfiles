@@ -16,6 +16,7 @@ style = "Italic"
 [window]
 decorations = "buttonless"
 padding = { x = 10, y = 10 }
+dynamic_padding = true
 
 [colors.primary]
 background = "#0e0f14"
