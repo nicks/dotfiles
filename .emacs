@@ -12,7 +12,7 @@
         go-mode
         rust-mode
         flycheck-rust
-        typescript-mode
+        typescript-ts-mode
         web-mode
         terraform-mode
         eslint-rc
@@ -46,31 +46,24 @@
 ;; install github copilot hooks
 (require 'vc-git)
 (use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-            :rev :newest
-            :branch "main")
+  :ensure t
+  :defer t
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("C-TAB" . copilot-accept-completion-by-word))
   :init
   (setq copilot-indent-offset-warning-disable t))
 
-;; for eat terminal backend (claude code)
-(use-package eat :ensure t)
-
-;; for vterm terminal backend (claude code)
-(use-package vterm :ensure t)
-
-;; claude code client
-(use-package claude-code :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el"
-	    :rev :newest)
-  :config (claude-code-mode)
-  :bind-keymap ("C-c t" . claude-code-command-map))
+;; default to text mode for new buffers.
+;; by default, emacs loads new buffers in a lisp mode,
+;; which triggers the copilot hooks and causes a long startup time.
+(setq initial-major-mode 'text-mode)
 
 ;; authinfo creds for forge
 (setq auth-sources '("~/.authinfo"))
-
-(add-hook 'prog-mode-hook 'copilot-mode)
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
 ;; UI
 (add-to-list 'default-frame-alist '(tool-bar-lines . t))
@@ -109,14 +102,15 @@
 (make-directory "~/.emacs.d/autosaves/" t)
 
 ;; protobuf mode
-(autoload 'protobuf-mode "protobuf-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
+(use-package protobuf-mode
+  :mode "\\.proto\\'")
 
 ;; go mode
-(autoload 'go-mode "go-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
-(setq gofmt-command "goimports")
-(setq gofmt-args '("-local" "github.com/tilt-dev"))
+(use-package go-mode
+  :mode "\\.go\\'"
+  :init
+  (setq gofmt-command "goimports")
+  (setq gofmt-args '("-local" "github.com/tilt-dev")))
 
 ;; json formatting
 ;; http://irreal.org/blog/?p=354
@@ -187,11 +181,13 @@
 (add-hook 'python-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'yaml-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'lua-mode-hook 'add-trailing-whitespace-on-write-hook)
-(add-hook 'typescript-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'typescript-ts-mode-hook 'add-trailing-whitespace-on-write-hook)
 
 ;; grep customization
 (with-eval-after-load 'grep
   (add-to-list 'grep-find-ignored-directories ".yarn")
+  (add-to-list 'grep-find-ignored-directories ".claude")
+  (add-to-list 'grep-find-ignored-directories ".specstory")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (add-to-list 'grep-find-ignored-directories "vendor"))
 
@@ -319,50 +315,55 @@ PATTERN is the search pattern to use with rgrep."
   (ansi-color-apply-on-region compilation-filter-start (point-max)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(require 'typescript-mode)
-(autoload 'typescript-mode "typescript-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx$" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.ts$" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.json$" . typescript-mode))
+;; modern typescript mode
+(use-package typescript-ts-mode
+  :mode (("\\.js\\'" . typescript-ts-mode)
+         ("\\.jsx\\'" . tsx-ts-mode)
+         ("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode)
+         ("\\.json\\'" . tsx-ts-mode))
+  :defer t)
 
-(require 'python-mode)
+(setq treesit-language-source-alist
+    '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
 
+(require 'treesit)
+(dolist (lang '(typescript tsx))
+  (unless (treesit-ready-p lang)
+    (treesit-install-language-grammar lang)))
+
+(add-hook 'typescript-ts-mode-hook 'eglot-ensure)
+(add-hook 'tsx-ts-mode-hook 'eglot-ensure)
+
+(use-package python-mode
+  :mode "\\.py\\'"
+  :defer t)
 (define-derived-mode tiltfile-mode
   python-mode "tiltfile"
   "Major mode for Tilt Dev."
   (setq-local case-fold-search nil))
 
-(add-to-list 'auto-mode-alist '("Tiltfile$" . tiltfile-mode))
+(add-to-list 'auto-mode-alist '("Tiltfile\\'" . tiltfile-mode))
 
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration
-    '(tiltfile-mode . "tiltfile"))
+(use-package terraform-mode
+  :mode "\\.tf\\'")
 
+(use-package lsp-mode
+  :hook (tiltfile-mode . lsp)
+  :config
+  (add-to-list 'lsp-language-id-configuration '(tiltfile-mode . "tiltfile"))
   (lsp-register-client
     (make-lsp-client :new-connection (lsp-stdio-connection `("tilt" "lsp" "start"))
                      :activation-fn (lsp-activate-on "tiltfile")
-                     :server-id 'tilt-lsp)))
-
-(require 'terraform-mode)
-(autoload 'terraform-mode "terraform-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.tf$" . terraform-mode))
-
-(require 'lsp-mode)
-;;(add-hook 'typescript-mode-hook #'lsp)
-;;(add-hook 'web-mode-hook #'lsp)
-(add-hook 'tiltfile-mode-hook #'lsp)
-
-;; We usually edit monorepos where file watching won't work well.
-(setq lsp-enable-file-watchers nil)
-
-(defun lsp--eslint-before-save (orig-fun)
-  "Run lsp-eslint-apply-all-fixes and then run the original lsp--before-save."
-  (when lsp-eslint-auto-fix-on-save (lsp-eslint-fix-all))
-  (funcall orig-fun))
-
-(advice-add 'lsp--before-save :around #'lsp--eslint-before-save)
+                     :server-id 'tilt-lsp))
+  ;; We usually edit monorepos where file watching won't work well.
+  (setq lsp-enable-file-watchers nil)
+  (defun lsp--eslint-before-save (orig-fun)
+    "Run lsp-eslint-apply-all-fixes and then run the original lsp--before-save."
+    (when lsp-eslint-auto-fix-on-save (lsp-eslint-fix-all))
+    (funcall orig-fun))
+  (advice-add 'lsp--before-save :around #'lsp--eslint-before-save))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -375,7 +376,7 @@ PATTERN is the search pattern to use with rgrep."
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(sh-basic-offset 2)
- '(typescript-indent-level 2))
+ '(typescript-ts-mode-indent-offset 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
