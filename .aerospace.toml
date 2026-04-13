@@ -43,15 +43,18 @@ outer.right = 0
     alt-shift-q = 'close'
 
     # i3 wraps focus by default
-    alt-j =         'focus --boundaries-action wrap-around-the-workspace left'
-    alt-k =         'focus --boundaries-action wrap-around-the-workspace down'
-    alt-i =         'focus --boundaries-action wrap-around-the-workspace up'
-    alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
+    alt-j =         'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors left'
+    alt-k =         'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors down'
+    alt-i =         'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors up'
+    alt-l = 'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors right'
 
     alt-shift-j = 'move left'
     alt-shift-k = 'move down'
     alt-shift-i = 'move up'
     alt-shift-l = 'move right'
+
+    alt-ctrl-shift-j = 'move-workspace-to-monitor --wrap-around left'
+    alt-ctrl-shift-l = 'move-workspace-to-monitor --wrap-around right'
     
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
