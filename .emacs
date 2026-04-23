@@ -29,7 +29,8 @@
         magit
         exec-path-from-shell
         sqlite3
-        docker-compose-mode))
+        docker-compose-mode
+        rego-mode))
 
 ;; activate all the packages
 (package-initialize)
@@ -104,6 +105,10 @@
 ;; protobuf mode
 (use-package protobuf-mode
   :mode "\\.proto\\'")
+
+;; rego mode
+(use-package rego-mode
+  :mode "\\.rego\\'")
 
 ;; go mode
 (use-package go-mode
@@ -188,6 +193,7 @@
   (add-to-list 'grep-find-ignored-directories ".yarn")
   (add-to-list 'grep-find-ignored-directories ".claude")
   (add-to-list 'grep-find-ignored-directories ".specstory")
+  (add-to-list 'grep-find-ignored-directories ".terraform")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (add-to-list 'grep-find-ignored-directories "vendor"))
 
@@ -247,7 +253,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
                    ""))))
   (call-interactively 'compile))
 
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 160)
 (set-frame-font "FiraCode Nerd Font" nil t)
 
 (defun smerge-or-next-error ()
@@ -371,7 +377,11 @@ PATTERN is the search pattern to use with rgrep."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(c-basic-offset 'set-from-style)
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(aider claude-code company copilot docker-compose-mode dockerfile-mode
+           dotenv-mode eat eslint-rc exec-path-from-shell flycheck-rust forge
+           go-mode gptel lsp-mode lua-mode protobuf-mode python-mode rego-mode
+           rust-mode sqlite3 terraform-mode tide typescript-mode vterm web-mode))
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
