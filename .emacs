@@ -30,7 +30,8 @@
         exec-path-from-shell
         sqlite3
         docker-compose-mode
-        rego-mode))
+        rego-mode
+        swift-mode))
 
 ;; activate all the packages
 (package-initialize)
@@ -184,6 +185,7 @@
 (add-hook 'go-mode-hook 'setup-godef-jump)
 (add-hook 'go-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'python-mode-hook 'add-trailing-whitespace-on-write-hook)
+(add-hook 'swift-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'yaml-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'lua-mode-hook 'add-trailing-whitespace-on-write-hook)
 (add-hook 'typescript-ts-mode-hook 'add-trailing-whitespace-on-write-hook)
@@ -344,6 +346,9 @@ PATTERN is the search pattern to use with rgrep."
 
 (use-package python-mode
   :mode "\\.py\\'"
+  :defer t)
+(use-package swift-mode
+  :mode "\\.swift\\'"
   :defer t)
 (define-derived-mode tiltfile-mode
   python-mode "tiltfile"
