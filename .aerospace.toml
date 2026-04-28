@@ -37,6 +37,7 @@ outer.right = 0
 
 [mode.main.binding]
     cmd-h = [] # Disable "hide application"
+    cmd-m = [] # Disable "minimize window"
     cmd-alt-h = [] # Disable "hide others"
 
     # kill focused window

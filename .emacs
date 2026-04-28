@@ -196,6 +196,8 @@
   (add-to-list 'grep-find-ignored-directories ".claude")
   (add-to-list 'grep-find-ignored-directories ".specstory")
   (add-to-list 'grep-find-ignored-directories ".terraform")
+  (add-to-list 'grep-find-ignored-directories ".build")
+  (add-to-list 'grep-find-ignored-directories "dist")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (add-to-list 'grep-find-ignored-directories "vendor"))
 
@@ -230,7 +232,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
        (cons "make" "Makefile")
        (cons "buck" "BUCK")
        (cons "./gradlew" "gradle.properties")
-       (cons "yarn" "package.json")
+       (cons "pnpm" "package.json")
        (cons "go" "go.mod")))
 
 (defun get-best-build-descriptor ()
@@ -383,10 +385,10 @@ PATTERN is the search pattern to use with rgrep."
  ;; If there is more than one, they won't work right.
  '(c-basic-offset 'set-from-style)
  '(package-selected-packages
-   '(aider claude-code company copilot docker-compose-mode dockerfile-mode
-           dotenv-mode eat eslint-rc exec-path-from-shell flycheck-rust forge
-           go-mode gptel lsp-mode lua-mode protobuf-mode python-mode rego-mode
-           rust-mode sqlite3 terraform-mode tide typescript-mode vterm web-mode))
+   '(aider company copilot docker-compose-mode dockerfile-mode dotenv-mode
+           eslint-rc exec-path-from-shell flycheck-rust forge go-mode gptel
+           lsp-mode lua-mode protobuf-mode python-mode rego-mode rust-mode
+           sqlite3 swift-mode terraform-mode tide vterm web-mode))
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
