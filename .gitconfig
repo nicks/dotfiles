@@ -5,13 +5,11 @@
 [url "git@github.com:"]
 	insteadOf = https://github.com/
 
-# repo-specific overrides
-[includeIf "gitdir:docker/"]
-  path = .gitconfig-docker
-[includeIf "gitdir:tilt-dev/"]
-  path = .gitconfig-docker
-
 [push]
 	autoSetupRemote = true
 [core]
   excludesfile = ~/global.gitignore
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	required = true
