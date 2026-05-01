@@ -197,6 +197,8 @@
   (add-to-list 'grep-find-ignored-directories ".specstory")
   (add-to-list 'grep-find-ignored-directories ".terraform")
   (add-to-list 'grep-find-ignored-directories ".build")
+  (add-to-list 'grep-find-ignored-directories "Index.noindex")
+  (add-to-list 'grep-find-ignored-directories "Intermediates.noindex")
   (add-to-list 'grep-find-ignored-directories "dist")
   (add-to-list 'grep-find-ignored-directories "node_modules")
   (add-to-list 'grep-find-ignored-directories "vendor"))
@@ -393,6 +395,7 @@ PATTERN is the search pattern to use with rgrep."
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(sh-basic-offset 2)
+ '(swift-mode:basic-offset 2)
  '(typescript-ts-mode-indent-offset 2))
 
 (custom-set-faces
