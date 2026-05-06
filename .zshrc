@@ -8,5 +8,5 @@ alias k="kubectl"
 alias d="docker"
 alias e="emacs"
 export EDITOR=emacs
-export PATH=$HOME/src/dotfiles/bin:$PATH
-export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/opt/libpq/lib
+export PATH=/opt/homebrew/opt/node@24/bin:$HOME/src/dotfiles/bin:$PATH
+export SKIP=pytest

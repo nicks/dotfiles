@@ -15,6 +15,7 @@ get_app_icon() {
     "Visual Studio Code") echo "" ;;     # nf-md-microsoft_visual_studio_code
     "Xcode") echo "" ;;                   # nf-dev-xcode
     "Slack") echo "" ;;                   # nf-md-slack
+    "Linear") echo "󰗝" ;;                 # nf-md-vector_triangle
     "Discord") echo "" ;;                 # nf-md-discord
     "Spotify") echo "" ;;                 # nf-md-spotify
     "Docker Desktop") echo "" ;;          # nf-linux-docker

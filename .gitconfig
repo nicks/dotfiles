@@ -9,9 +9,10 @@
 	autoSetupRemote = true
 [core]
   excludesfile = ~/global.gitignore
+[lfs]
+	concurrenttransfers = 500
 [filter "lfs"]
+	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
-	required = true
-[lfs]
-	concurrenttransfers = 50
+	process = git-lfs filter-process
