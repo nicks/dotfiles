@@ -28,3 +28,8 @@ fi
 if [[ ! -f ~/.Brewfile ]]; then
   ln -s "$(pwd)/.Brewfile" "$HOME/.Brewfile"
 fi
+
+if [[ ! -f ~/Brewfile ]]; then
+    ln -s "$(pwd)/.Brewfile" "$HOME/.Brewfile"
+fi
+
