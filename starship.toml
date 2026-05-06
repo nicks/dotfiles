@@ -7,13 +7,17 @@ format = """
 $username\
 $hostname\
 $directory\
-$git_branch\
 $git_state\
-$git_status\
+${custom.jj}\
 $cmd_duration\
 $line_break\
 $python\
 $character"""
+
+[custom.jj]
+when = "jj-starship detect"
+shell = ["jj-starship"]
+format = "$output "
 
 [directory]
 truncation_length = 5
@@ -24,19 +28,10 @@ success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 
 [git_branch]
-symbol = " "
+disabled = true
 
 [git_status]
-conflicted = "⚠️ "
-ahead = "⇡${count}"
-behind = "⇣${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-untracked = "?"
-stashed = "$"
-modified = "!"
-staged = "+"
-renamed = "»"
-deleted = "✘"
+disabled = true
 
 [cmd_duration]
 min_time = 2_000
