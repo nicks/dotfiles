@@ -232,6 +232,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
        (cons "grunt" "Gruntfile.js")
        (cons "mvn" "pom.xml")
        (cons "make" "Makefile")
+       (cons "uv" "pyproject.toml")
        (cons "buck" "BUCK")
        (cons "./gradlew" "gradle.properties")
        (cons "pnpm" "package.json")
