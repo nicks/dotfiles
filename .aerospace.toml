@@ -80,6 +80,8 @@ outer.right = 0
     alt-t = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-new.sh'
     alt-shift-t = 'exec-and-forget ~/src/dotfiles/bin/aerospace-workspace-move-to-new.sh'
 
+    alt-shift-y = 'exec-and-forget ~/src/dotfiles/bin/aerospace-sort-windows.sh'
+
     alt-h = 'split horizontal'
     alt-v = 'split vertical'
 
