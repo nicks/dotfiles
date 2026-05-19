@@ -17,6 +17,8 @@
         terraform-mode
         eslint-rc
         lsp-mode
+        lsp-pyright
+        lsp-sourcekit
         dockerfile-mode
         protobuf-mode
         python-mode
@@ -30,6 +32,7 @@
         exec-path-from-shell
         sqlite3
         docker-compose-mode
+        rainbow-delimiters
         rego-mode
         swift-mode))
 
@@ -74,6 +77,19 @@
 (add-to-list 'initial-frame-alist '(tool-bar-lines . t))
 (add-to-list 'initial-frame-alist '(menu-bar-lines . t))
 (add-to-list 'initial-frame-alist '(ns-transparent-titlebar . t))
+
+(editorconfig-mode 1)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(custom-set-faces
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#ffffff")))) ; white
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#1abc9c")))) ; teal
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#f1c40f")))) ; yellow
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#2ecc71")))) ; green
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#e67e22")))) ; orange
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#3498db")))) ; blue
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#f1c40f")))) ; yellow
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#2ecc71")))) ; green
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#e67e22"))))) ; orange
 
 (transient-mark-mode 1)
 (set-background-color "#0e0f14")
@@ -197,6 +213,7 @@
   (add-to-list 'grep-find-ignored-directories ".specstory")
   (add-to-list 'grep-find-ignored-directories ".terraform")
   (add-to-list 'grep-find-ignored-directories ".build")
+  (add-to-list 'grep-find-ignored-directories ".venv")
   (add-to-list 'grep-find-ignored-directories "Index.noindex")
   (add-to-list 'grep-find-ignored-directories "Intermediates.noindex")
   (add-to-list 'grep-find-ignored-directories "dist")
@@ -263,20 +280,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
 (set-face-attribute 'default nil :height 160)
 (set-frame-font "FiraCode Nerd Font" nil t)
 
-(defun smerge-or-next-error ()
-  "Run `smerge-next` if in `smerge-mode`, otherwise run `next-error`."
-  (interactive)
-  (if (and (boundp 'smerge-mode) smerge-mode)
-      (smerge-next)
-    (next-error)))
-
-(defun smerge-or-prev-error ()
-  "Run `smerge-next` if in `smerge-mode`, otherwise run `next-error`."
-  (interactive)
-  (if (and (boundp 'smerge-mode) smerge-mode)
-      (smerge-prev)
-    (previous-error)))
-
 ;; grep functions
 (defun interactive-rgrep (pattern)
   "Interactive grep with pattern input, searching all files in current buffer's directory.
@@ -289,13 +292,10 @@ PATTERN is the search pattern to use with rgrep."
 ;; Keyboard shortcuts
 (global-set-key "\C-cc" 'compile-command)
 (global-set-key "\C-cg" 'goto-line)
-(global-set-key "\C-cj" 'smerge-or-next-error)
-(global-set-key "\C-ck" 'smerge-or-prev-error)
+(global-set-key "\C-cj" 'next-error)
+(global-set-key "\C-ck" 'previous-error)
 (global-set-key "\C-cr" 'query-replace-regexp)
 (global-set-key "\C-cd" 'gptel)
-(global-set-key "\C-cu" 'smerge-keep-upper)
-(global-set-key "\C-cl" 'smerge-keep-lower)
-(global-set-key "\C-cm" 'smerge-mode)
 (global-set-key "\C-cf" 'interactive-rgrep)
 (global-set-key "\C-ca" 'aider-run-aider)
 
@@ -307,14 +307,6 @@ PATTERN is the search pattern to use with rgrep."
 
 (setq gptel-model 'gpt-4.1
       gptel-backend (gptel-make-gh-copilot "Copilot"))
-
-;; set up auto smerge mode
-(defun sm-try-smerge ()
-  (save-excursion
-  	(goto-char (point-min))
-  	(when (re-search-forward "^<<<<<<< " nil t)
-  	  (smerge-mode 1))))
-(add-hook 'find-file-hook 'sm-try-smerge t)
 
 (require 'json)
 
@@ -352,9 +344,32 @@ PATTERN is the search pattern to use with rgrep."
 (use-package python-mode
   :mode "\\.py\\'"
   :defer t)
+
+(setq lsp-auto-guess-root t)
+
+(setq lsp-ui-doc-enable nil
+      lsp-ui-sideline-enable nil
+      lsp-ui-peek-enable nil
+      lsp-ui-imenu-enable nil
+      lsp-ui-flycheck-enable nil)
+
+;;; configure swift-mode with lsp
 (use-package swift-mode
   :mode "\\.swift\\'"
   :defer t)
+
+(defun find-sourcekit-lsp ()
+  (or (executable-find "sourcekit-lsp")
+      (and (eq system-type 'darwin)
+           (string-trim (shell-command-to-string "xcrun -f sourcekit-lsp")))
+      "/usr/local/swift/usr/bin/sourcekit-lsp"))
+
+(use-package lsp-sourcekit
+    :ensure t
+    :after lsp-mode
+    :custom
+    (lsp-sourcekit-executable (find-sourcekit-lsp) "Find sourcekit-lsp"))
+
 (define-derived-mode tiltfile-mode
   python-mode "tiltfile"
   "Major mode for Tilt Dev."
@@ -364,6 +379,24 @@ PATTERN is the search pattern to use with rgrep."
 
 (use-package terraform-mode
   :mode "\\.tf\\'")
+
+;;; lsp-mode
+(use-package lsp-mode
+  :ensure t
+  :init (setq lsp-keymap-prefix "C-c l")
+  :hook (python-mode . lsp-deferred)
+  :commands lsp)
+
+;;; python lsp server
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp))))
+
+;;; swift lsp server
+(use-package lsp-mode
+    :ensure t
+    :commands lsp
+    :hook ((swift-mode . lsp)))
 
 (use-package lsp-mode
   :hook (tiltfile-mode . lsp)
@@ -390,8 +423,9 @@ PATTERN is the search pattern to use with rgrep."
  '(package-selected-packages
    '(aider company copilot docker-compose-mode dockerfile-mode dotenv-mode
            eslint-rc exec-path-from-shell flycheck-rust forge go-mode gptel
-           lsp-mode lua-mode protobuf-mode python-mode rego-mode rust-mode
-           sqlite3 swift-mode terraform-mode tide vterm web-mode))
+           lsp-mode lsp-pyright lsp-sourcekit lua-mode protobuf-mode
+           python-mode rainbow-delimiters rego-mode rust-mode sqlite3 swift-mode
+           terraform-mode tide vterm web-mode))
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
