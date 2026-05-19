@@ -35,11 +35,8 @@
   (should (fboundp 'format-json))
   (should (fboundp 'format-json-region))
   (should (fboundp 'interactive-rgrep))
-  (should (fboundp 'smerge-or-next-error))
-  (should (fboundp 'smerge-or-prev-error))
   (should (fboundp 'untabify-buffer))
   (should (fboundp 'colorize-compilation-buffer))
-  (should (fboundp 'sm-try-smerge))
   (should (fboundp 'get-closest-pathname))
   (should (fboundp 'get-best-build-descriptor)))
 
@@ -73,8 +70,8 @@
   "Global keybindings should be set."
   (should (eq (global-key-binding (kbd "C-c c")) 'compile-command))
   (should (eq (global-key-binding (kbd "C-c g")) 'goto-line))
-  (should (eq (global-key-binding (kbd "C-c j")) 'smerge-or-next-error))
-  (should (eq (global-key-binding (kbd "C-c k")) 'smerge-or-prev-error))
+  (should (eq (global-key-binding (kbd "C-c j")) 'next-error))
+  (should (eq (global-key-binding (kbd "C-c k")) 'previous-error))
   (should (eq (global-key-binding (kbd "C-c f")) 'interactive-rgrep))
   (should (eq (global-key-binding (kbd "C-c r")) 'query-replace-regexp)))
 
