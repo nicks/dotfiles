@@ -1,0 +1,4 @@
+mode = "split"
+sidebar = true
+wrap_lines = false
+exclude_untracked = false

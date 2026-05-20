@@ -2,33 +2,36 @@
 
 set -u
 
-git diff --quiet && git diff --cached --quiet
-if [ $? -ne 0 ] ; then
-    echo -e "\033[1;31mYou have uncommitted changes. Please commit or stash them before running git-sync.\033[0m"
-    exit 1
-fi
-
 main=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 if [ -z "$main" ] ; then
-    echo -e "\033[1;31mCould not determine the main branch. Please ensure your repository has a default branch set on origin.\033[0m"
-    exit 1
+  echo -e "\033[1;31mCould not determine the main branch. Please ensure your repository has a default branch set on origin.\033[0m"
+  exit 1
 fi
 
 # check if our ssh-agent has our key loaded
 ssh-add -l | grep -q "no identities"
 if [ $? -eq 0 ] ; then
-    ssh-add
+  ssh-add
 fi
 
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-git checkout "$main"
-
-git pull origin "$main"
-if [ $? -ne 0 ] ; then
-    echo -e "\033[1;31mFailed to pull the latest changes from origin/$main.\033[0m"
-    git checkout "$current_branch"
-    exit 1
+is_bare_repo=$(git rev-parse --is-bare-repository)
+if [ "$is_bare_repo" = "true" ] ; then
+  set -e
+  git fetch
+  exit 0
 fi
 
-git checkout "$current_branch"
-git rebase "$main" "$@"
+git diff --quiet && git diff --cached --quiet
+if [ $? -ne 0 ] ; then
+  echo -e "\033[1;31mYou have uncommitted changes. Please commit or stash them before running git-sync.\033[0m"
+  exit 1
+fi
+
+git fetch origin
+if [ $? -ne 0 ] ; then
+  echo -e "\033[1;31mFailed to pull the latest changes from origin/$main.\033[0m"
+  exit 1
+fi
+
+git rebase "origin/$main"

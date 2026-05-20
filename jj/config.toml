@@ -1,0 +1,14 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[user]
+name = "Nick Santos"
+email = "nicholas.j.santos@gmail.com"
+
+[ui]
+pager = ["hunk", "pager"]
+diff-formatter = ":git"
+
+[templates]
+commit_trailers = """
+  format_signed_off_by_trailer(self)
+"""
