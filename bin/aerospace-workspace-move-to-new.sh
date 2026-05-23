@@ -1,9 +1,16 @@
 #!/bin/bash
 
+# Move the focused window to the lowest-numbered empty workspace on the
+# focused monitor. Searches beyond the currently-listed workspaces so
+# that workspaces 10+ can be created on demand.
+
+MAX_WORKSPACE=30
+
 focused_monitor=$(aerospace list-monitors --focused | awk '{print $1}')
 focused=$(aerospace list-workspaces --focused | tr -d '\n')
-for sid in $(aerospace list-workspaces --all); do
-    count=$(aerospace list-windows --workspace $sid | wc -l | tr -d ' ')
+
+for ((sid=1; sid<=MAX_WORKSPACE; sid++)); do
+    count=$(aerospace list-windows --workspace "$sid" 2>/dev/null | wc -l | tr -d ' ')
     if [[ "$focused" != "$sid" && "$count" == "0" ]]; then
         aerospace move-node-to-workspace --focus-follows-window "$sid"
         aerospace move-workspace-to-monitor "$focused_monitor"

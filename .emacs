@@ -9,12 +9,14 @@
       '(flycheck
         tide
         vterm
+        projectile
         go-mode
         rust-mode
         flycheck-rust
         typescript-ts-mode
         web-mode
         terraform-mode
+        format-all
         eslint-rc
         lsp-mode
         lsp-pyright
@@ -81,21 +83,50 @@
 (editorconfig-mode 1)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (custom-set-faces
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#ffffff")))) ; white
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#1abc9c")))) ; teal
- '(rainbow-delimiters-depth-3-face ((t (:foreground "#f1c40f")))) ; yellow
- '(rainbow-delimiters-depth-4-face ((t (:foreground "#2ecc71")))) ; green
- '(rainbow-delimiters-depth-5-face ((t (:foreground "#e67e22")))) ; orange
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#3498db")))) ; blue
- '(rainbow-delimiters-depth-7-face ((t (:foreground "#f1c40f")))) ; yellow
- '(rainbow-delimiters-depth-8-face ((t (:foreground "#2ecc71")))) ; green
- '(rainbow-delimiters-depth-9-face ((t (:foreground "#e67e22"))))) ; orange
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#ffffff"))))   ; white
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#7dcfff"))))   ; cyan
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#e0af68"))))   ; yellow
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#66ff66"))))   ; green
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#bb9af7"))))   ; magenta
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#7aa2f7"))))   ; blue
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#e0af68"))))   ; yellow
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#66ff66"))))   ; green
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#bb9af7"))))   ; magenta
+ ;; Syntax highlighting colors mapped to the ghostty palette.
+ '(font-lock-keyword-face       ((t (:foreground "#bb9af7"))))   ; magenta
+ '(font-lock-string-face        ((t (:foreground "#9ece6a"))))   ; muted green
+ '(font-lock-comment-face       ((t (:foreground "#737aa2"))))   ; gray
+ '(font-lock-comment-delimiter-face ((t (:foreground "#737aa2"))))
+ '(font-lock-doc-face           ((t (:foreground "#737aa2"))))
+ '(font-lock-function-name-face ((t (:foreground "#7aa2f7"))))   ; blue
+ '(font-lock-variable-name-face ((t (:foreground "#e0af68"))))   ; yellow
+ '(font-lock-type-face          ((t (:foreground "#7dcfff"))))   ; cyan
+ '(font-lock-constant-face      ((t (:foreground "#bb9af7"))))   ; magenta
+ '(font-lock-builtin-face       ((t (:foreground "#f7768e"))))   ; red
+ '(font-lock-preprocessor-face  ((t (:foreground "#bb9af7"))))   ; magenta
+ '(font-lock-warning-face       ((t (:foreground "#f7768e" :weight bold))))
+ '(font-lock-negation-char-face ((t (:foreground "#f7768e")))))
 
 (transient-mark-mode 1)
 (set-background-color "#0e0f14")
 (set-foreground-color "#ffffff")
 (set-face-background 'mode-line "#15161e")
 (set-face-foreground 'mode-line "#7aa2f7")
+
+;; ANSI color palette for compilation/shell buffers — match ghostty.
+(setq ansi-color-names-vector
+      ["#15161e"   ; black
+       "#f7768e"   ; red
+       "#66ff66"   ; green
+       "#e0af68"   ; yellow
+       "#7aa2f7"   ; blue
+       "#bb9af7"   ; magenta
+       "#7dcfff"   ; cyan
+       "#ffffff"]) ; white
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq-default fill-column 80)
@@ -250,6 +281,7 @@ This may not do the correct thing in presence of links. If it does not find FILE
        (cons "mvn" "pom.xml")
        (cons "make" "Makefile")
        (cons "uv" "pyproject.toml")
+       (cons "swift" "Package.swift")
        (cons "buck" "BUCK")
        (cons "./gradlew" "gradle.properties")
        (cons "pnpm" "package.json")
@@ -305,6 +337,9 @@ PATTERN is the search pattern to use with rgrep."
 (global-set-key (kbd "<XF86Copy>") 'kill-ring-save)
 (global-set-key (kbd "<XF86Cut>") 'kill-region)
 
+;; disable keyboard shortcuts that are always the wrong thing
+(global-set-key (kbd "s-n") 'ignore)
+
 (setq gptel-model 'gpt-4.1
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
@@ -357,6 +392,20 @@ PATTERN is the search pattern to use with rgrep."
 (use-package swift-mode
   :mode "\\.swift\\'"
   :defer t)
+
+
+(use-package format-all
+  :hook (swift-mode . format-all-mode)
+  :config
+  (setq format-all-formatters
+        '(("Swift" swift-format)))
+  (define-format-all-formatter
+   swift-format
+   (:executable "swift-format")
+   (:install "brew install swift")
+   (:languages "Swift")
+   (:features)
+   (:format (format-all--buffer-easy executable "format" "-"))))
 
 (defun find-sourcekit-lsp ()
   (or (executable-find "sourcekit-lsp")
@@ -414,6 +463,15 @@ PATTERN is the search pattern to use with rgrep."
     (funcall orig-fun))
   (advice-add 'lsp--before-save :around #'lsp--eslint-before-save))
 
+(use-package projectile
+  :ensure t
+  :init
+  (setq projectile-project-search-path '("~/src"))
+  :config
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (global-set-key (kbd "s-p") 'projectile-command-map)
+  (projectile-mode +1))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -422,21 +480,20 @@ PATTERN is the search pattern to use with rgrep."
  '(c-basic-offset 'set-from-style)
  '(package-selected-packages
    '(aider company copilot docker-compose-mode dockerfile-mode dotenv-mode
-           eslint-rc exec-path-from-shell flycheck-rust forge go-mode gptel
-           lsp-mode lsp-pyright lsp-sourcekit lua-mode protobuf-mode
-           python-mode rainbow-delimiters rego-mode rust-mode sqlite3 swift-mode
-           terraform-mode tide vterm web-mode))
+           eslint-rc exec-path-from-shell flycheck-rust forge format-all go-mode
+           gptel lsp-mode lsp-pyright lsp-sourcekit lua-mode projectile
+           projectile-mode protobuf-mode python-mode rainbow-delimiters
+           rego-mode rust-mode sqlite3 swift-mode terraform-mode tide vterm
+           web-mode))
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
+ '(projectile-project-root-files-bottom-up
+   '(".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".pijul" ".sl" ".jj"
+     "package.json" "Package.swift"))
  '(sh-basic-offset 2)
  '(swift-mode:basic-offset 2)
  '(typescript-ts-mode-indent-offset 2))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
 (put 'dired-find-alternate-file 'disabled nil)

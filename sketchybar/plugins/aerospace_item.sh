@@ -10,6 +10,7 @@ get_app_icon() {
     "Terminal") echo "" ;;               # nf-dev-terminal
     "iTerm2") echo "" ;;                  # nf-dev-terminal
     "Alacritty") echo "" ;;              # nf-dev-terminal
+    "Ghostty") echo "" ;;                # nf-dev-terminal
     "Emacs") echo "" ;;                   # nf-custom-emacs
     "Neovim") echo "" ;;                  # nf-dev-vim
     "Visual Studio Code") echo "" ;;     # nf-md-microsoft_visual_studio_code
@@ -39,16 +40,37 @@ get_app_icon() {
   esac
 }
 
-focused=$(aerospace list-workspaces --focused | tr -d '\n')
+# Iterate a fixed numeric range so we still clean up sketchybar items
+# for workspaces 10+ after they empty out (they drop from `list-workspaces --all`).
+MAX_WORKSPACE=30
+
+# Visible workspace per monitor. Missing monitors yield empty strings, which
+# never match a numeric workspace id below.
+ws_mon_1=$(aerospace list-workspaces --monitor 1 --visible 2>/dev/null | tr -d '\n ')
+ws_mon_2=$(aerospace list-workspaces --monitor 2 --visible 2>/dev/null | tr -d '\n ')
+ws_mon_3=$(aerospace list-workspaces --monitor 3 --visible 2>/dev/null | tr -d '\n ')
+
 previous="aerospace"
 
-for sid in $(aerospace list-workspaces --all); do
-  count=$(aerospace list-windows --workspace $sid | wc -l | tr -d ' ')
-  if [[ "$focused" == "$sid" || "$count" != "0" ]]; then
-    color=0xffffffff
-    if [[ "$focused" == "$sid" ]]; then
-      color=0xff66ff66
-    fi
+for ((sid=1; sid<=MAX_WORKSPACE; sid++)); do
+  count=$(aerospace list-windows --workspace $sid 2>/dev/null | wc -l | tr -d ' ')
+
+  # First match wins, so a workspace claimed by multiple monitors takes the
+  # lower-numbered monitor's color.
+  color=0xffffffff
+  is_visible=false
+  if [[ -n "$ws_mon_1" && "$sid" == "$ws_mon_1" ]]; then
+    color=0xff66ff66  # green: monitor 1
+    is_visible=true
+  elif [[ -n "$ws_mon_2" && "$sid" == "$ws_mon_2" ]]; then
+    color=0xff7dcfff  # cyan: monitor 2
+    is_visible=true
+  elif [[ -n "$ws_mon_3" && "$sid" == "$ws_mon_3" ]]; then
+    color=0xffff9933  # orange: monitor 3
+    is_visible=true
+  fi
+
+  if [[ "$is_visible" == true || "$count" != "0" ]]; then
     
     # Get the first window on this workspace
     app_name=$(aerospace list-windows --workspace $sid | head -n1 | cut -d'|' -f2 | xargs)
