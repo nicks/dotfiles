@@ -18,7 +18,7 @@ ANSI 0–7 (ghostty `palette = N`, alacritty `[colors.normal]`, emacs `ansi-colo
 |---|---|---|
 | 0 black   | `#15161e` | terminal black; emacs mode-line bg |
 | 1 red     | `#f7768e` | emacs `font-lock-builtin/warning/negation` |
-| 2 green   | `#66ff66` | sketchybar monitor 1; rainbow-delimiters depth 4/8 |
+| 2 green   | `#9ece6a` | rainbow-delimiters depth 4/8; emacs `font-lock-string-face` |
 | 3 yellow  | `#e0af68` | emacs `font-lock-variable-name-face`; rainbow-delimiters depth 3/7 |
 | 4 blue    | `#7aa2f7` | emacs mode-line fg, `font-lock-function-name-face`; rainbow-delimiters depth 6 |
 | 5 magenta | `#bb9af7` | emacs `font-lock-keyword/constant/preprocessor`; rainbow-delimiters depth 5/9 |
@@ -29,7 +29,7 @@ ANSI 8–15 (`[colors.bright]`) repeat 1–7 except palette 8 = `#414868` (brigh
 
 Other colors deliberately used:
 - `#0e0f14` — global background (ghostty, alacritty, emacs)
-- `#9ece6a` — muted green, emacs `font-lock-string-face` (softer than the bright accent green)
+- `#66ff66` — bright green, sketchybar monitor 1 (more vivid than the palette green)
 - `#737aa2` — gray, emacs comment/doc faces (brighter than palette 8)
 - `#ff9933` — orange, sketchybar monitor 3 (no orange in the ghostty palette)
 
