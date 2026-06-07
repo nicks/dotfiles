@@ -82,51 +82,65 @@
 
 (editorconfig-mode 1)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;; Color palette — keep in sync with ghostty/config and alacritty/alacritty.toml.
+;; See CLAUDE.md for the master palette.
+(defconst my/palette-black   "#15161e")
+(defconst my/palette-red     "#f7768e")
+(defconst my/palette-green   "#9ece6a")
+(defconst my/palette-yellow  "#e0af68")
+(defconst my/palette-blue    "#7aa2f7")
+(defconst my/palette-magenta "#bb9af7")
+(defconst my/palette-cyan    "#7dcfff")
+(defconst my/palette-white   "#ffffff")
+(defconst my/palette-black-background "#0e0f14")
+(defconst my/palette-foreground-gray  "#737aa2")
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#ffffff"))))   ; white
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#7dcfff"))))   ; cyan
- '(rainbow-delimiters-depth-3-face ((t (:foreground "#e0af68"))))   ; yellow
- '(rainbow-delimiters-depth-4-face ((t (:foreground "#66ff66"))))   ; green
- '(rainbow-delimiters-depth-5-face ((t (:foreground "#bb9af7"))))   ; magenta
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#7aa2f7"))))   ; blue
- '(rainbow-delimiters-depth-7-face ((t (:foreground "#e0af68"))))   ; yellow
- '(rainbow-delimiters-depth-8-face ((t (:foreground "#66ff66"))))   ; green
- '(rainbow-delimiters-depth-9-face ((t (:foreground "#bb9af7"))))   ; magenta
- ;; Syntax highlighting colors mapped to the ghostty palette.
- '(font-lock-keyword-face       ((t (:foreground "#bb9af7"))))   ; magenta
- '(font-lock-string-face        ((t (:foreground "#9ece6a"))))   ; muted green
- '(font-lock-comment-face       ((t (:foreground "#737aa2"))))   ; gray
- '(font-lock-comment-delimiter-face ((t (:foreground "#737aa2"))))
- '(font-lock-doc-face           ((t (:foreground "#737aa2"))))
- '(font-lock-function-name-face ((t (:foreground "#7aa2f7"))))   ; blue
- '(font-lock-variable-name-face ((t (:foreground "#e0af68"))))   ; yellow
- '(font-lock-type-face          ((t (:foreground "#7dcfff"))))   ; cyan
- '(font-lock-constant-face      ((t (:foreground "#bb9af7"))))   ; magenta
- '(font-lock-builtin-face       ((t (:foreground "#f7768e"))))   ; red
- '(font-lock-preprocessor-face  ((t (:foreground "#bb9af7"))))   ; magenta
- '(font-lock-warning-face       ((t (:foreground "#f7768e" :weight bold))))
- '(font-lock-negation-char-face ((t (:foreground "#f7768e")))))
+ `(font-lock-builtin-face ((t (:foreground ,my/palette-red))))
+ `(font-lock-comment-delimiter-face ((t (:foreground ,my/palette-foreground-gray))))
+ `(font-lock-comment-face ((t (:foreground ,my/palette-foreground-gray))))
+ `(font-lock-constant-face ((t (:foreground ,my/palette-magenta))))
+ `(font-lock-doc-face ((t (:foreground ,my/palette-foreground-gray))))
+ `(font-lock-function-name-face ((t (:foreground ,my/palette-blue))))
+ `(font-lock-keyword-face ((t (:foreground ,my/palette-magenta))))
+ `(font-lock-negation-char-face ((t (:foreground ,my/palette-red))))
+ `(font-lock-preprocessor-face ((t (:foreground ,my/palette-magenta))))
+ `(font-lock-string-face ((t (:foreground ,my/palette-green))))
+ `(font-lock-type-face ((t (:foreground ,my/palette-cyan))))
+ `(font-lock-variable-name-face ((t (:foreground ,my/palette-yellow))))
+ `(font-lock-warning-face ((t (:foreground ,my/palette-red :weight bold))))
+ `(minibuffer-prompt ((t (:foreground ,my/palette-cyan))))
+ `(rainbow-delimiters-depth-1-face ((t (:foreground ,my/palette-white))))
+ `(rainbow-delimiters-depth-2-face ((t (:foreground ,my/palette-cyan))))
+ `(rainbow-delimiters-depth-3-face ((t (:foreground ,my/palette-yellow))))
+ `(rainbow-delimiters-depth-4-face ((t (:foreground ,my/palette-green))))
+ `(rainbow-delimiters-depth-5-face ((t (:foreground ,my/palette-magenta))))
+ `(rainbow-delimiters-depth-6-face ((t (:foreground ,my/palette-blue))))
+ `(rainbow-delimiters-depth-7-face ((t (:foreground ,my/palette-yellow))))
+ `(rainbow-delimiters-depth-8-face ((t (:foreground ,my/palette-green))))
+ `(rainbow-delimiters-depth-9-face ((t (:foreground ,my/palette-magenta)))))
 
 (transient-mark-mode 1)
-(set-background-color "#0e0f14")
-(set-foreground-color "#ffffff")
-(set-face-background 'mode-line "#15161e")
-(set-face-foreground 'mode-line "#7aa2f7")
+(set-background-color my/palette-black-background)
+(set-foreground-color my/palette-white)
+(set-face-background 'mode-line my/palette-black)
+(set-face-foreground 'mode-line my/palette-blue)
 
 ;; ANSI color palette for compilation/shell buffers — match ghostty.
 (setq ansi-color-names-vector
-      ["#15161e"   ; black
-       "#f7768e"   ; red
-       "#66ff66"   ; green
-       "#e0af68"   ; yellow
-       "#7aa2f7"   ; blue
-       "#bb9af7"   ; magenta
-       "#7dcfff"   ; cyan
-       "#ffffff"]) ; white
+      (vector my/palette-black
+              my/palette-red
+              my/palette-green
+              my/palette-yellow
+              my/palette-blue
+              my/palette-magenta
+              my/palette-cyan
+              my/palette-white))
 (setq line-number-mode t)
 (setq column-number-mode t)
 (setq-default fill-column 80)
@@ -478,13 +492,7 @@ PATTERN is the search pattern to use with rgrep."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(c-basic-offset 'set-from-style)
- '(package-selected-packages
-   '(aider company copilot docker-compose-mode dockerfile-mode dotenv-mode
-           eslint-rc exec-path-from-shell flycheck-rust forge format-all go-mode
-           gptel lsp-mode lsp-pyright lsp-sourcekit lua-mode projectile
-           projectile-mode protobuf-mode python-mode rainbow-delimiters
-           rego-mode rust-mode sqlite3 swift-mode terraform-mode tide vterm
-           web-mode))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((claude-code :url "https://github.com/stevemolitor/claude-code.el")
      (copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))

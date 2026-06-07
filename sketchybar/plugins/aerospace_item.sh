@@ -60,7 +60,7 @@ for ((sid=1; sid<=MAX_WORKSPACE; sid++)); do
   color=0xffffffff
   is_visible=false
   if [[ -n "$ws_mon_1" && "$sid" == "$ws_mon_1" ]]; then
-    color=0xff66ff66  # green: monitor 1
+    color=0xff66ff66  # bright green: monitor 1
     is_visible=true
   elif [[ -n "$ws_mon_2" && "$sid" == "$ws_mon_2" ]]; then
     color=0xff7dcfff  # cyan: monitor 2
