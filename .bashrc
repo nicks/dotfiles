@@ -1,8 +1,13 @@
-alias k="kubectl"
-alias d="docker"
-alias e="emacs"
+# Bail out for non-interactive shells (scp, rsync, etc.).
+case $- in *i*) ;; *) return;; esac
 
-mkdir -p "$HOME/.terraform.d/plugin-cache"
-export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+DOTFILES="$HOME/src/dotfiles"
 
-alias e=emacs
+# Re-source env in case this is a non-login shell (common on Linux).
+. "$DOTFILES/shell/env.sh"
+. "$DOTFILES/shell/aliases.sh"
+. "$DOTFILES/shell/interactive.sh"
+
+# Bash-specific.
+command -v starship >/dev/null && eval "$(starship init bash)"
+command -v jj >/dev/null && eval "$(jj util completion bash)"

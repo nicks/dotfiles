@@ -30,9 +30,11 @@ if [[ ! -L ~/.config/jj/config.toml ]]; then
   ln -sf "$(pwd)/jj/config.toml" "$HOME/.config/jj/config.toml"
 fi
 
-if [[ ! -f ~/.zshrc ]]; then
-  ln -s "$(pwd)/.zshrc" "$HOME/.zshrc"
-fi
+for rc in .profile .bash_profile .bashrc .zprofile .zshrc; do
+  if [[ ! -f ~/$rc ]]; then
+    ln -s "$(pwd)/$rc" "$HOME/$rc"
+  fi
+done
 
 if [[ ! -f ~/.emacs ]]; then
   ln -s "$(pwd)/.emacs" "$HOME/.emacs"
