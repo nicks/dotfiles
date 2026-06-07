@@ -72,17 +72,6 @@
 ;; authinfo creds for forge
 (setq auth-sources '("~/.authinfo"))
 
-;; UI
-(add-to-list 'default-frame-alist '(tool-bar-lines . t))
-(add-to-list 'default-frame-alist '(menu-bar-lines . t))
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'initial-frame-alist '(tool-bar-lines . t))
-(add-to-list 'initial-frame-alist '(menu-bar-lines . t))
-(add-to-list 'initial-frame-alist '(ns-transparent-titlebar . t))
-
-(editorconfig-mode 1)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
 ;; Color palette — keep in sync with ghostty/config and alacritty/alacritty.toml.
 ;; See CLAUDE.md for the master palette.
 (defconst my/palette-black   "#15161e")
@@ -95,6 +84,22 @@
 (defconst my/palette-white   "#ffffff")
 (defconst my/palette-black-background "#0e0f14")
 (defconst my/palette-foreground-gray  "#737aa2")
+
+;; frame and font settings
+(add-to-list 'default-frame-alist '(tool-bar-lines . t))
+(add-to-list 'default-frame-alist '(menu-bar-lines . t))
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'initial-frame-alist '(tool-bar-lines . t))
+(add-to-list 'initial-frame-alist '(menu-bar-lines . t))
+(add-to-list 'initial-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist `(background-color . ,my/palette-black-background))
+(add-to-list 'default-frame-alist `(foreground-color . ,my/palette-white))
+(add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font-16"))
+(set-face-background 'mode-line my/palette-black)
+(set-face-foreground 'mode-line my/palette-blue)
+
+(editorconfig-mode 1)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -126,10 +131,6 @@
  `(rainbow-delimiters-depth-9-face ((t (:foreground ,my/palette-magenta)))))
 
 (transient-mark-mode 1)
-(set-background-color my/palette-black-background)
-(set-foreground-color my/palette-white)
-(set-face-background 'mode-line my/palette-black)
-(set-face-foreground 'mode-line my/palette-blue)
 
 ;; ANSI color palette for compilation/shell buffers — match ghostty.
 (setq ansi-color-names-vector
@@ -322,9 +323,6 @@ This may not do the correct thing in presence of links. If it does not find FILE
                      (substring last-command (+ make-command-index (length (car desc)) 1))
                    ""))))
   (call-interactively 'compile))
-
-(set-face-attribute 'default nil :height 160)
-(set-frame-font "FiraCode Nerd Font" nil t)
 
 ;; grep functions
 (defun interactive-rgrep (pattern)
