@@ -16,8 +16,8 @@ complexity to preserve behavior that nobody depends on.
 A little duplication is better than the wrong abstraction. Prefer a meaningful
 abstraction that expresses real product concepts, even if it requires some
 duplicated logic. Don't deduplicate code just because it looks similar.
-+
- ## Concurrency
+
+## Concurrency
  
  Use promises to encapsulate the state of an asynchronous task.
  
@@ -65,4 +65,4 @@ duplicated logic. Don't deduplicate code just because it looks similar.
    await this.#onStateChanged;
    return this.#state;
  }
- ```
+```
