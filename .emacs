@@ -385,6 +385,17 @@ PATTERN is the search pattern to use with rgrep."
   (unless (treesit-ready-p lang)
     (treesit-install-language-grammar lang)))
 
+(unless (executable-find "typescript-language-server")
+  (message "Installing typescript-language-server...")
+  (if (executable-find "npm")
+      (let ((exit (call-process "npm" nil "*npm-install*" nil
+                                "install" "-g"
+                                "typescript" "typescript-language-server")))
+        (if (zerop exit)
+            (message "typescript-language-server installed.")
+          (message "npm install failed (exit %d); see *npm-install*" exit)))
+    (message "npm not found on PATH; cannot install typescript-language-server.")))
+
 (add-hook 'typescript-ts-mode-hook 'eglot-ensure)
 (add-hook 'tsx-ts-mode-hook 'eglot-ensure)
 

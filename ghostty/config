@@ -4,11 +4,16 @@ font-style-bold = Bold
 font-style-italic = Italic
 font-size = 16
 
+confirm-close-surface = false
+quit-after-last-window-closed = true
 window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
 macos-titlebar-style = hidden
 macos-window-shadow = false
+font-feature = -calt
+font-feature = -dlig
+font-feature = -liga
 
 background = 0e0f14
 foreground = ffffff
