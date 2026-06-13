@@ -13,6 +13,53 @@ if [[ "$action" != "focus" && "$action" != "move" ]]; then
   exit 1
 fi
 
+
+focused_window=$(aerospace list-windows --focused | cut -d' ' -f1 | tr -d ' ')
+
+shift_workspace_right_ignoring_focused() {
+  local from="$1"
+  local to="$(( from + 1 ))"
+
+  # base case: there are no windows to move in 'from'
+  local from_windows=$(aerospace list-windows --workspace "$from" | cut -d' ' -f1 | grep -v "$focused_window")
+  if [[ -z "$from_windows" ]]; then
+    return
+  fi
+
+  # shift the 'to' workspace out of the way
+  shift_workspace_right_ignoring_focused "$to"
+
+  # move all the windows
+  for win in $from_windows; do
+    aerospace move-node-to-workspace --window-id "$win" "$to"
+  done
+}
+
+# It's easier to think of this is 3 actions:
+# focus: find the next non-empty workspace, focus it
+# move (empty workspace): find the next non-empty workspace, move the focused window there
+# move (non-empty workspace): shift all the windows in this workspace out of the way
+if [[ "$action" == "move" ]]; then
+  focused_workspace=$(aerospace list-workspaces --focused | tr -d '\n')
+  count=$(aerospace list-windows --workspace "$focused_workspace" | wc -l | tr -d ' ')
+  if [[ "$count" != "1" ]]; then
+    
+    # handle the shift case
+    if [[ "$mode" == "prev" ]]; then
+      # Move all windows in the current workspace to the next workspace, so that
+      # the current window is alone.
+      shift_workspace_right_ignoring_focused "$focused_workspace"
+    else
+      # Move all windows in the next workspace to make way for this window.
+      shift_workspace_right_ignoring_focused "$(( focused_workspace + 1 ))"
+      aerospace move-node-to-workspace --focus-follows-window "$(( focused_workspace + 1 ))"
+    fi
+    exit 0
+    
+  fi
+fi
+
+# focus and move actions: search for the workspace we want
 focused=$(aerospace list-workspaces --focused | tr -d '\n')
 first="0"
 next="0"
