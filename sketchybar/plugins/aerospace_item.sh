@@ -40,10 +40,6 @@ get_app_icon() {
   esac
 }
 
-# Iterate a fixed numeric range so we still clean up sketchybar items
-# for workspaces 10+ after they empty out (they drop from `list-workspaces --all`).
-MAX_WORKSPACE=30
-
 # Visible workspace per monitor. Missing monitors yield empty strings, which
 # never match a numeric workspace id below.
 ws_mon_1=$(aerospace list-workspaces --monitor 1 --visible 2>/dev/null | tr -d '\n ')
@@ -51,52 +47,66 @@ ws_mon_2=$(aerospace list-workspaces --monitor 2 --visible 2>/dev/null | tr -d '
 ws_mon_3=$(aerospace list-workspaces --monitor 3 --visible 2>/dev/null | tr -d '\n ')
 
 previous="aerospace"
+focused_ws=$(aerospace list-workspaces --focused 2>/dev/null | tr -d '\n ')
+existing=$(aerospace list-workspaces --monitor all --empty no | cut -d'|' -f1 | tr -d ' ' | sed 's/^/space./')
+current=$(sketchybar --query bar | jq -r '.items[] | select(startswith("space."))')
+stale=$(comm -23 <(echo "$current" | sort) <(echo "$existing" | sort))
+for item in $stale; do
+  sketchybar --remove "$item"
+done
 
-for ((sid=1; sid<=MAX_WORKSPACE; sid++)); do
+for item in $existing; do
+  # remove "space." prefix to get workspace id
+  sid=$(echo "$item" | sed 's/^space\.//')
   count=$(aerospace list-windows --workspace $sid 2>/dev/null | wc -l | tr -d ' ')
 
   # First match wins, so a workspace claimed by multiple monitors takes the
   # lower-numbered monitor's color.
   color=0xffffffff
-  is_visible=false
   if [[ -n "$ws_mon_1" && "$sid" == "$ws_mon_1" ]]; then
     color=0xff66ff66  # bright green: monitor 1
-    is_visible=true
   elif [[ -n "$ws_mon_2" && "$sid" == "$ws_mon_2" ]]; then
     color=0xff7dcfff  # cyan: monitor 2
-    is_visible=true
   elif [[ -n "$ws_mon_3" && "$sid" == "$ws_mon_3" ]]; then
     color=0xffff9933  # orange: monitor 3
-    is_visible=true
   fi
 
-  if [[ "$is_visible" == true || "$count" != "0" ]]; then
-    
-    # Get the first window on this workspace
-    app_name=$(aerospace list-windows --workspace $sid | head -n1 | cut -d'|' -f2 | xargs)
-    app_icon=""  # default icon
-    
-    if [[ -n "$app_name" ]]; then
-      app_icon=$(get_app_icon "$app_name")
-    fi
-    
-    # Display workspace number with app icon
-    label="$sid $app_icon"
-    
-    sketchybar --add item space.$sid left \
-               --set space.$sid \
-               label.font="FiraCode Nerd Font:Regular:15.0" \
-               background.color=0x44ffffff \
-               background.corner_radius=5 \
-               background.height=20 \
-               background.drawing=off \
-               label="$label" \
-               label.color=$color \
-               click_script="aerospace workspace $sid" \
-               script="$CONFIG_DIR/plugins/aerospace.sh $sid"
-    sketchybar --move space.$sid after "$previous"
-    previous="space.$sid"
+  if [[ "$focused_ws" == "$sid" ]]; then
+    app_names=$(aerospace list-windows --focused | head -n1 | cut -d'|' -f2 | xargs)
   else
-    sketchybar --remove space.$sid
+    app_names=$(aerospace list-windows --workspace $sid | sort -n | cut -d'|' -f2)
   fi
+  app_icon=""  # default icon
+
+  # app_names are separated by newlines
+  while IFS= read -r app_name; do
+    # trim space from app_name
+    app_name=$(echo "$app_name" | xargs)
+    if [[ -z "$app_name" ]]; then
+      continue
+    fi
+    candidate=$(get_app_icon "$app_name")
+    echo "$candidate for $app_name"
+    if [[ "$candidate" != "" ]]; then
+      app_icon="$candidate"
+      break
+    fi
+  done <<< "$app_names"
+  
+  # Display workspace number with app icon
+  label="$sid $app_icon"
+  
+  sketchybar --add sid space.$sid left \
+             --set space.$sid \
+             label.font="FiraCode Nerd Font:Regular:15.0" \
+             background.color=0x44ffffff \
+             background.corner_radius=5 \
+             background.height=20 \
+             background.drawing=off \
+             label="$label" \
+             label.color=$color \
+             click_script="aerospace workspace $sid" \
+             script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+  sketchybar --move space.$sid after "$previous"
+  previous="space.$sid"
 done
