@@ -91,3 +91,11 @@ outer.right = 0
 
     alt-shift-c = 'reload-config'
     alt-shift-b = 'exec-and-forget sketchybar --reload'
+
+[[on-window-detected]]
+  if.app-name-regex-substring = 'System Settings'
+  run = 'layout tiling'
+
+[[on-window-detected]]
+  if.app-id = 'com.apple.iphonesimulator'
+  run = 'layout tiling'
