@@ -30,11 +30,11 @@ sketchybar --default "${default[@]}"
 
 ## Sketchybar config
 
-sketchybar --add event aerospace_workspace_change
+sketchybar --add event aerospace_focus_change
 
 sketchybar --add item aerospace left \
            --set aerospace width=0 script="$PLUGIN_DIR/aerospace_item.sh" \
-           --subscribe aerospace aerospace_workspace_change
+           --subscribe aerospace aerospace_focus_change
 
 ##### Adding Left Items #####
 # We add some regular items to the left side of the bar, where
