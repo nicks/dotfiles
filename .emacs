@@ -52,17 +52,17 @@
 
 ;; install github copilot hooks
 (require 'vc-git)
-(use-package copilot
-  :ensure t
-  :defer t
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-<tab>" . copilot-accept-completion-by-word)
-              ("C-TAB" . copilot-accept-completion-by-word))
-  :init
-  (setq copilot-indent-offset-warning-disable t))
+;; (use-package copilot
+;;   :ensure t
+;;   :defer t
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (:map copilot-completion-map
+;;               ("<tab>" . copilot-accept-completion)
+;;               ("TAB" . copilot-accept-completion)
+;;               ("C-<tab>" . copilot-accept-completion-by-word)
+;;               ("C-TAB" . copilot-accept-completion-by-word))
+;;   :init
+;;   (setq copilot-indent-offset-warning-disable t))
 
 ;; default to text mode for new buffers.
 ;; by default, emacs loads new buffers in a lisp mode,
@@ -372,16 +372,20 @@ PATTERN is the search pattern to use with rgrep."
   :mode (("\\.js\\'" . typescript-ts-mode)
          ("\\.jsx\\'" . tsx-ts-mode)
          ("\\.ts\\'" . typescript-ts-mode)
-         ("\\.tsx\\'" . tsx-ts-mode)
-         ("\\.json\\'" . tsx-ts-mode))
+         ("\\.tsx\\'" . tsx-ts-mode))
+  :defer t)
+
+(use-package json-mode
+  :mode "\\.json\\'"
   :defer t)
 
 (setq treesit-language-source-alist
     '((typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+      (json "https://github.com/tree-sitter/tree-sitter-json" "master" "src")))
 
 (require 'treesit)
-(dolist (lang '(typescript tsx))
+(dolist (lang '(typescript tsx json))
   (unless (treesit-ready-p lang)
     (treesit-install-language-grammar lang)))
 
