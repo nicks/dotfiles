@@ -70,7 +70,10 @@ else
 fi
 for sid in $(echo "$workspaces"); do
   count=$(aerospace list-windows --workspace $sid | wc -l | tr -d ' ')
-  if [[ "$count" == "0" ]]; then
+
+  # empty workspaces should only be considered if they're the currenly
+  # focused workspace
+  if [[ "$count" == "0" ]] && [[ "$focused" != "$sid" ]]; then
     continue
   fi
   if [[ "$first" == "0" ]]; then

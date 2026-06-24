@@ -48,33 +48,36 @@ ws_mon_3=$(aerospace list-workspaces --monitor 3 --visible 2>/dev/null | tr -d '
 
 previous="aerospace"
 focused_ws=$(aerospace list-workspaces --focused 2>/dev/null | tr -d '\n ')
-existing=$(aerospace list-workspaces --monitor all --empty no | cut -d'|' -f1 | tr -d ' ' | sed 's/^/space./')
-current=$(sketchybar --query bar | jq -r '.items[] | select(startswith("space."))')
+existing_nonempty=$(aerospace list-workspaces --monitor all --empty no | cut -d'|' -f1 | tr -d ' ')
+existing=$(cat <(echo "$existing_nonempty") <(echo "$focused_ws") | sort -n -u)
+current=$(sketchybar --query bar | jq -r '.items[] | select(startswith("space."))' | sed 's/^space\.//' | sort -n -u)
+
+# comm lets us compute items in file 1 but not in file 2.
+# comm expects its inputs to be sorted lexically, not numerically.
 stale=$(comm -23 <(echo "$current" | sort) <(echo "$existing" | sort))
 for item in $stale; do
-  sketchybar --remove "$item"
+  sketchybar --remove "space.$item"
 done
 
 for item in $existing; do
   # remove "space." prefix to get workspace id
-  sid=$(echo "$item" | sed 's/^space\.//')
-  count=$(aerospace list-windows --workspace $sid 2>/dev/null | wc -l | tr -d ' ')
+  count=$(aerospace list-windows --workspace $item 2>/dev/null | wc -l | tr -d ' ')
 
   # First match wins, so a workspace claimed by multiple monitors takes the
   # lower-numbered monitor's color.
   color=0xffffffff
-  if [[ -n "$ws_mon_1" && "$sid" == "$ws_mon_1" ]]; then
+  if [[ -n "$ws_mon_1" && "$item" == "$ws_mon_1" ]]; then
     color=0xff66ff66  # bright green: monitor 1
-  elif [[ -n "$ws_mon_2" && "$sid" == "$ws_mon_2" ]]; then
+  elif [[ -n "$ws_mon_2" && "$item" == "$ws_mon_2" ]]; then
     color=0xff7dcfff  # cyan: monitor 2
-  elif [[ -n "$ws_mon_3" && "$sid" == "$ws_mon_3" ]]; then
+  elif [[ -n "$ws_mon_3" && "$item" == "$ws_mon_3" ]]; then
     color=0xffff9933  # orange: monitor 3
   fi
 
-  if [[ "$focused_ws" == "$sid" ]]; then
+  if [[ "$focused_ws" == "$item" ]]; then
     app_names=$(aerospace list-windows --focused | head -n1 | cut -d'|' -f2 | xargs)
   else
-    app_names=$(aerospace list-windows --workspace $sid | sort -n | cut -d'|' -f2)
+    app_names=$(aerospace list-windows --workspace $item | sort -n | cut -d'|' -f2)
   fi
   app_icon=""  # default icon
 
@@ -94,10 +97,10 @@ for item in $existing; do
   done <<< "$app_names"
   
   # Display workspace number with app icon
-  label="$sid $app_icon"
+  label="$item $app_icon"
   
-  sketchybar --add sid space.$sid left \
-             --set space.$sid \
+  sketchybar --add sid space.$item left \
+             --set space.$item \
              label.font="FiraCode Nerd Font:Regular:15.0" \
              background.color=0x44ffffff \
              background.corner_radius=5 \
@@ -105,8 +108,8 @@ for item in $existing; do
              background.drawing=off \
              label="$label" \
              label.color=$color \
-             click_script="aerospace workspace $sid" \
-             script="$CONFIG_DIR/plugins/aerospace.sh $sid"
-  sketchybar --move space.$sid after "$previous"
-  previous="space.$sid"
+             click_script="aerospace workspace $item" \
+             script="$CONFIG_DIR/plugins/aerospace.sh $item"
+  sketchybar --move space.$item after "$previous"
+  previous="space.$item"
 done
