@@ -9,9 +9,15 @@ animation_duration = 0.25
 animation_fps = 120.0
 
 # Mouse / focus behavior
-focus_follows_mouse = false
+focus_follows_mouse = true
 mouse_follows_focus = true
 mouse_hides_on_focus = false
+
+# Manage every Space/display automatically. rift defaults this to true, which
+# leaves a Space unmanaged until you opt in with Alt+Z (toggle_space_activated);
+# an unmanaged Space is invisible to focus_display/move_window_to_display, so
+# cross-monitor focus silently no-ops. false = manage everything by default.
+default_disable = false
 
 # Watch this file and reload automatically on save.
 hot_reload = true
@@ -20,9 +26,9 @@ hot_reload = true
 # (see sketchybar/plugins/rift_item.sh). rift appends the event JSON as a
 # trailing arg, which `sh -c` drops into $0 and ignores.
 run_on_start = [
-  "/usr/local/bin/rift-cli subscribe cli --event workspace_changed --command sh --args -c --args 'exec /usr/local/bin/sketchybar --trigger rift_change'",
-  "/usr/local/bin/rift-cli subscribe cli --event windows_changed --command sh --args -c --args 'exec /usr/local/bin/sketchybar --trigger rift_change'",
-  "/usr/local/bin/rift-cli subscribe cli --event focused_window_changed --command sh --args -c --args 'exec /usr/local/bin/sketchybar --trigger rift_change'",
+  "rift-cli subscribe cli --event workspace_changed --command sh --args -c --args 'exec sketchybar --trigger rift_change'",
+  "rift-cli subscribe cli --event windows_changed --command sh --args -c --args 'exec sketchybar --trigger rift_change'",
+  "rift-cli subscribe cli --event focused_window_changed --command sh --args -c --args 'exec sketchybar --trigger rift_change'",
 ]
 auto_focus_blacklist = []
 
@@ -70,7 +76,7 @@ default_workspace_count = 4
 auto_assign_windows = true
 preserve_focus_per_workspace = true
 workspace_auto_back_and_forth = false
-prevent_wrapping = false
+prevent_wrapping = true
 reapply_app_rules_on_title_change = false
 workspace_rules = []
 app_rules = []
@@ -82,17 +88,20 @@ comb1 = "Alt + Shift"
 [keys]
 # --- Focus (Alt) ---------------------------------------------------------
 # In the scrolling layout the primary axis is horizontal, so j/k drive the
-# columns (left/right). h/l are kept as aliases.
-"Alt + H" = { move_focus = "left" }
+# columns (left/right) within a display. h/l move focus between physical
+# displays, stacked vertically here (h = up, l = down).
+"Alt + H" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-display.sh\" up"] }
 "Alt + J" = { move_focus = "left" }
 "Alt + K" = { move_focus = "right" }
-"Alt + L" = { move_focus = "right" }
+"Alt + L" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-display.sh\" down"] }
 
 # --- Move the focused window (Alt + Shift) -------------------------------
-"comb1 + H" = { move_node = "left" }
+# Mirrors the focus axis: j/k shift the column within the display, h/l send the
+# focused window to the display above/below.
+"comb1 + H" = { move_window_to_display = { selector = "up" } }
 "comb1 + J" = { move_node = "left" }
 "comb1 + K" = { move_node = "right" }
-"comb1 + L" = { move_node = "right" }
+"comb1 + L" = { move_window_to_display = { selector = "down" } }
 
 # --- Workspaces ----------------------------------------------------------
 "Alt + 0" = { switch_to_workspace = 0 }
@@ -108,21 +117,12 @@ comb1 = "Alt + Shift"
 "Alt + Tab" = "switch_to_last_workspace"
 
 # --- Layout / rift control ----------------------------------------------
-# Relayout the active workspace into scrolling columns.
-"Alt + Shift + T" = { set_workspace_layout = { mode = "scrolling" } }
-# Restart the rift launchd service (kickstart -k).
-"Alt + Shift + C" = { exec = ["/usr/local/bin/rift-cli", "service", "restart"] }
+"comb1 + C" = { exec = ["brew", "services", "restart", "rift"] }
+"comb1 + B" = { exec = ["sketchybar", "reload"] }
 
 # --- Window management ----------------------------------------------------
-"Alt + Shift + Space" = "toggle_window_floating"
-"Alt + F" = "toggle_fullscreen_within_gaps"
-"Alt + Shift + F" = "toggle_fullscreen_within_gaps"
-"Alt + Comma" = "toggle_stack"
-"Alt + Slash" = "toggle_orientation"
-
-# Resize the focused column (horizontal by default in the scrolling layout).
-"Alt + Shift + Equal" = "resize_window_grow"
-"Alt + Shift + Minus" = "resize_window_shrink"
+"comb1 + Space" = "toggle_window_floating"
+"comb1 + F" = "toggle_fullscreen_within_gaps"
 
 "Alt + Z" = "toggle_space_activated"
-"Alt + Enter" = { "exec" = ["/bin/bash", "-c", "open -a \"/System/Applications/Utilities/Terminal.app\""] }
+"Alt + Enter" = { "exec" = ["open", "-na", "/Applications/Ghostty.app"] }

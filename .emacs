@@ -496,7 +496,8 @@ PATTERN is the search pattern to use with rgrep."
   :ensure t
   :init
   (setq projectile-project-search-path '("~/src"))
-  :hook (prog-mode . projectile-mode)
+  :hook ((prog-mode . projectile-mode)
+         (dired-mode . projectile-mode))
   :config
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (global-set-key (kbd "s-p") 'projectile-command-map))

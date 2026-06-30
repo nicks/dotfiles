@@ -41,6 +41,11 @@ for rc in .profile .bash_profile .bashrc .zprofile .zshrc; do
   fi
 done
 
+mkdir -p ~/.claude
+if [[ ! -L ~/.claude/CLAUDE.md ]]; then
+  ln -sf "$(pwd)/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+fi
+
 if [[ ! -f ~/.emacs ]]; then
   ln -s "$(pwd)/.emacs" "$HOME/.emacs"
 fi
