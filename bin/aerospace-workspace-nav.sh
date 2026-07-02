@@ -1,16 +1,29 @@
 #!/bin/bash
 
 # Takes two arguments:
-# aerospace-workspace-helper.sh <prev|next> <focus|move>
-mode="$1"
+# aerospace-workspace-nav.sh <left|right> <focus|move>
+#
+# First tries an in-workspace focus/move via aerospace's native command.
+# If that hits the workspace boundary, falls through to cross-workspace:
+#   focus: focus the prev/next non-empty workspace
+#   move (single window): move to the prev/next non-empty workspace
+#   move (multiple windows): peel the focused window into its own workspace
+#                            by shifting the rest out of the way
+dir="$1"
 action="$2"
-if [[ "$mode" != "prev" && "$mode" != "next" ]]; then
-  echo "Invalid mode: $mode. Use 'prev' or 'next'."
-  exit 1
-fi
+case "$dir" in
+  left)  mode="prev" ;;
+  right) mode="next" ;;
+  *) echo "Invalid direction: $dir. Use 'left' or 'right'."; exit 1 ;;
+esac
 if [[ "$action" != "focus" && "$action" != "move" ]]; then
   echo "Invalid action: $action. Use 'focus' or 'move'."
   exit 1
+fi
+
+# In-workspace attempt. Exits 0 on success; falls through on boundary.
+if aerospace "$action" --boundaries workspace --boundaries-action fail "$dir" 2>/dev/null; then
+  exit 0
 fi
 
 
@@ -43,7 +56,7 @@ if [[ "$action" == "move" ]]; then
   focused_workspace=$(aerospace list-workspaces --focused | tr -d '\n')
   count=$(aerospace list-windows --workspace "$focused_workspace" | wc -l | tr -d ' ')
   if [[ "$count" != "1" ]]; then
-    
+
     # handle the shift case
     if [[ "$mode" == "prev" ]]; then
       # Move all windows in the current workspace to the next workspace, so that
@@ -55,7 +68,7 @@ if [[ "$action" == "move" ]]; then
       aerospace move-node-to-workspace --focus-follows-window "$(( focused_workspace + 1 ))"
     fi
     exit 0
-    
+
   fi
 fi
 
@@ -97,4 +110,3 @@ if [[ "$action" == "focus" ]]; then
 else
   aerospace move-node-to-workspace --focus-follows-window "$first"
 fi
-
