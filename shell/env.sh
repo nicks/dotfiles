@@ -2,7 +2,7 @@
 # Sourced by .profile, .zprofile, and (idempotently) by .bashrc/.zshrc
 # so Linux terminal emulators that start non-login shells still get PATH.
 
-export EDITOR="emacsclient -t -a ''"
+export EDITOR="emacs -nw"
 export SKIP=pytest
 
 # Prepend a directory to PATH if it exists on disk.

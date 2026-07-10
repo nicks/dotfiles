@@ -52,17 +52,17 @@
 
 ;; install github copilot hooks
 (require 'vc-git)
-;; (use-package copilot
-;;   :ensure t
-;;   :defer t
-;;   :hook (prog-mode . copilot-mode)
-;;   :bind (:map copilot-completion-map
-;;               ("<tab>" . copilot-accept-completion)
-;;               ("TAB" . copilot-accept-completion)
-;;               ("C-<tab>" . copilot-accept-completion-by-word)
-;;               ("C-TAB" . copilot-accept-completion-by-word))
-;;   :init
-;;   (setq copilot-indent-offset-warning-disable t))
+(use-package copilot
+  :ensure t
+  :defer t
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("C-TAB" . copilot-accept-completion-by-word))
+  :init
+  (setq copilot-indent-offset-warning-disable t))
 
 ;; default to text mode for new buffers.
 ;; by default, emacs loads new buffers in a lisp mode,
