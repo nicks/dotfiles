@@ -352,8 +352,9 @@ PATTERN is the search pattern to use with rgrep."
 ;; disable keyboard shortcuts that are always the wrong thing
 (global-set-key (kbd "s-n") 'ignore)
 
-(setq gptel-model 'gpt-4.1
-      gptel-backend (gptel-make-gh-copilot "Copilot"))
+(with-eval-after-load 'gptel
+  (setq gptel-model 'gpt-4.1
+        gptel-backend (gptel-make-gh-copilot "Copilot")))
 
 (require 'json)
 
@@ -466,6 +467,7 @@ PATTERN is the search pattern to use with rgrep."
 ;;; python lsp server
 (use-package lsp-pyright
   :ensure t
+  :defer t
   :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp))))
 
 ;;; swift lsp server
@@ -494,10 +496,10 @@ PATTERN is the search pattern to use with rgrep."
   :ensure t
   :init
   (setq projectile-project-search-path '("~/src"))
+  :hook (prog-mode . projectile-mode)
   :config
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (global-set-key (kbd "s-p") 'projectile-command-map)
-  (projectile-mode +1))
+  (global-set-key (kbd "s-p") 'projectile-command-map))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
