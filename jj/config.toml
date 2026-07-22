@@ -8,6 +8,9 @@ email = "nicholas.j.santos@gmail.com"
 pager = ["hunk", "pager"]
 diff-formatter = ":git"
 
+[remotes.origin]
+auto-track-bookmarks = "*"
+
 [templates]
 commit_trailers = """
   format_signed_off_by_trailer(self)

@@ -30,6 +30,11 @@ if [[ ! -L ~/.config/jj/config.toml ]]; then
   ln -sf "$(pwd)/jj/config.toml" "$HOME/.config/jj/config.toml"
 fi
 
+mkdir -p ~/.config/rift
+if [[ ! -L ~/.config/rift/config.toml ]]; then
+  ln -sf "$(pwd)/rift/config.toml" "$HOME/.config/rift/config.toml"
+fi
+
 for rc in .profile .bash_profile .bashrc .zprofile .zshrc; do
   if [[ ! -f ~/$rc ]]; then
     ln -s "$(pwd)/$rc" "$HOME/$rc"

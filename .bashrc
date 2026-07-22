@@ -11,3 +11,4 @@ DOTFILES="$HOME/src/dotfiles"
 # Bash-specific.
 command -v starship >/dev/null && eval "$(starship init bash)"
 command -v jj >/dev/null && eval "$(jj util completion bash)"
+. "$HOME/.cargo/env"
