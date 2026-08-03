@@ -1,0 +1,2 @@
+# Per-host overrides for `dopey` (linked to ~/.config/ghostty-local.conf by install.sh)
+font-size = 13

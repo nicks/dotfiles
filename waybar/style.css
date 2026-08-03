@@ -54,7 +54,7 @@
     background: #323232;
     color: white;
     font-family: FiraCode Nerd Font, Cantarell, Noto Sans, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 /* Each module */
@@ -69,6 +69,8 @@
 #pulseaudio,
 #temperature,
 #tray {
+    background: #323232;
+    color: white;
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -167,6 +169,14 @@
 
 #tray {
     /* No styles */
+}
+
+#custom-niri-windows {
+  /* Space between the window list and the following window module */
+  margin: 0 8px;
+  /* Propo Nerd Fonts give icons their true width, so they center in the
+     focused highlight instead of overflowing to the right */
+  font-family: "FiraCode Nerd Font Propo";
 }
 
 #window {
