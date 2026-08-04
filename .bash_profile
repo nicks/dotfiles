@@ -2,3 +2,4 @@
 # Then source .bashrc so interactive features work in login terminals too.
 [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 [ -r "$HOME/.bashrc" ] && . "$HOME/.bashrc"
+. "$HOME/.cargo/env"

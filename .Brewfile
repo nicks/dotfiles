@@ -7,6 +7,7 @@ tap "hashicorp/tap"
 tap "nikitabobko/tap"
 tap "tilt-dev/tap"
 
+brew "acsandmann/tap/rift"
 brew "awscli"
 brew "cagent"
 brew "cmake"

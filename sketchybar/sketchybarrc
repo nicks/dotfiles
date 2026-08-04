@@ -7,7 +7,9 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 # If you are looking for other colors, see the color picker:
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
-sketchybar --bar position=bottom height=40 blur_radius=30 color=0xff323232
+# topmost=window keeps the bar drawn above rift's tiled windows (the bottom gap
+# in rift/config.toml reserves space so window content isn't hidden behind it).
+sketchybar --bar position=bottom height=40 blur_radius=30 color=0xff323232 topmost=window
 
 ##### Changing Defaults #####
 # We now change some default values, which are applied to all further items.
@@ -30,11 +32,13 @@ sketchybar --default "${default[@]}"
 
 ## Sketchybar config
 
-sketchybar --add event aerospace_focus_change
+sketchybar --add event rift_change
 
-sketchybar --add item aerospace left \
-           --set aerospace width=0 script="$PLUGIN_DIR/aerospace_item.sh" \
-           --subscribe aerospace aerospace_focus_change
+# `rift` is a zero-width anchor; rift_item.sh adds the space.N workspace items
+# after it. rift triggers rift_change via run_on_start subscriptions.
+sketchybar --add item rift left \
+           --set rift width=0 script="$PLUGIN_DIR/rift_item.sh" \
+           --subscribe rift rift_change
 
 ##### Adding Left Items #####
 # We add some regular items to the left side of the bar, where
