@@ -12,7 +12,13 @@
 
 source "$CONFIG_DIR/plugins/app_icons.sh"
 
-RIFT_CLI=/usr/local/bin/rift-cli
+# rift-cli lives under Homebrew, which differs by arch (/opt/homebrew on Apple
+# Silicon, /usr/local on Intel). sketchybar launches this plugin with a minimal
+# PATH, so command -v may miss it — fall back to the known Homebrew locations.
+RIFT_CLI=$(command -v rift-cli)
+[[ -x "$RIFT_CLI" ]] || for p in /opt/homebrew/bin/rift-cli /usr/local/bin/rift-cli; do
+  [[ -x "$p" ]] && { RIFT_CLI=$p; break; }
+done
 JQ=$(command -v jq)
 
 FOCUS_COLOR=0xff66ff66   # bright green: the focused window

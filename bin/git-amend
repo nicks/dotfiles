@@ -1,4 +1,4 @@
 #!/bin/sh
 
 git add .
-git commit -s -S --amend --no-edit
+git commit -s -S --amend --no-edit --reset-author
