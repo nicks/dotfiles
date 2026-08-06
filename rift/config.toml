@@ -9,8 +9,10 @@ animation_duration = 0.25
 animation_fps = 120.0
 
 # Mouse / focus behavior
-focus_follows_mouse = true
 mouse_follows_focus = true
+
+# disabled -- makes it annoying to use top/bottom menubars
+focus_follows_mouse = false
 mouse_hides_on_focus = false
 
 # Manage every Space/display automatically. rift defaults this to true, which

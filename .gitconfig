@@ -9,7 +9,8 @@
 	autoSetupRemote = true
 [core]
   excludesfile = ~/global.gitignore
-	pager = hunk pager
+[pager]
+  diff = hunk pager
 [lfs]
 	concurrenttransfers = 500
 [filter "lfs"]
