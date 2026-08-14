@@ -128,3 +128,14 @@ comb1 = "Alt + Shift"
 
 "Alt + Z" = "toggle_space_activated"
 "Alt + Enter" = { "exec" = ["open", "-na", "/Applications/Ghostty.app"] }
+
+# --- Jump to an app (Alt + Shift) ----------------------------------------
+# Each of these lands on the app's oldest window and launches the app if it
+# isn't running, so the shortcut is a stable destination rather than a
+# most-recently-used toggle. Note Alt+Enter above opens a *new* Ghostty window;
+# comb1 + G returns to the original one.
+"comb1 + S" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-app.sh\" Slack"] }
+"comb1 + A" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-app.sh\" 'Google Chrome'"] }
+"comb1 + D" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-app.sh\" Linear"] }
+"comb1 + E" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-app.sh\" Flashback"] }
+"comb1 + G" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-app.sh\" Ghostty"] }
