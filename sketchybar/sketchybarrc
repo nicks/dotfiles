@@ -35,9 +35,11 @@ sketchybar --default "${default[@]}"
 sketchybar --add event rift_change
 
 # `rift` is a zero-width anchor; rift_item.sh adds the space.N workspace items
-# after it. rift triggers rift_change via run_on_start subscriptions.
+# after it. rift triggers rift_change via run_on_start subscriptions. The poll on
+# top of that is for the Claude Code badges: a session going from working to
+# waiting on you moves no window, so rift has no event to report.
 sketchybar --add item rift left \
-           --set rift width=0 script="$PLUGIN_DIR/rift_item.sh" \
+           --set rift width=0 update_freq=15 script="$PLUGIN_DIR/rift_item.sh" \
            --subscribe rift rift_change
 
 ##### Adding Left Items #####

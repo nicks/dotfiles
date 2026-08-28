@@ -11,7 +11,12 @@ fi
 # check if our ssh-agent has our key loaded
 ssh-add -l | grep -q "no identities"
 if [ $? -eq 0 ] ; then
-  ssh-add
+  # macOS reads the passphrase from the login Keychain rather than prompting.
+  if [ "$(uname -s)" = "Darwin" ] ; then
+    ssh-add --apple-use-keychain
+  else
+    ssh-add
+  fi
 fi
 
 current_branch=$(git rev-parse --abbrev-ref HEAD)

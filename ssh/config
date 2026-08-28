@@ -1,0 +1,10 @@
+# Shared ssh client config.
+#
+# On macOS, UseKeychain lets ssh pull a key's passphrase straight out of the
+# login Keychain, so pushes never stop to prompt. Linux OpenSSH treats that
+# keyword as a fatal parse error, hence IgnoreUnknown.
+Host *
+  IgnoreUnknown UseKeychain
+  UseKeychain yes
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519
