@@ -75,7 +75,7 @@
 
 ;; Color palette — keep in sync with ghostty/config and alacritty/alacritty.toml.
 ;; See CLAUDE.md for the master palette.
-(defconst my/palette-black   "#15161e")
+(defconst my/palette-black   "#000000")
 (defconst my/palette-red     "#f7768e")
 (defconst my/palette-green   "#9ece6a")
 (defconst my/palette-yellow  "#e0af68")
@@ -83,8 +83,9 @@
 (defconst my/palette-magenta "#bb9af7")
 (defconst my/palette-cyan    "#7dcfff")
 (defconst my/palette-white   "#ffffff")
-(defconst my/palette-black-background "#0e0f14")
+(defconst my/palette-black-background "#000000")
 (defconst my/palette-foreground-gray  "#737aa2")
+(defconst my/mode-line-background     "#15161e")
 
 ;; frame and font settings
 (add-to-list 'default-frame-alist '(tool-bar-lines . t))
@@ -98,7 +99,7 @@
 (add-to-list 'default-frame-alist `(background-color . ,my/palette-black-background))
 (add-to-list 'default-frame-alist `(foreground-color . ,my/palette-white))
 (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font-16"))
-(set-face-background 'mode-line my/palette-black)
+(set-face-background 'mode-line my/mode-line-background)
 (set-face-foreground 'mode-line my/palette-blue)
 
 (editorconfig-mode 1)

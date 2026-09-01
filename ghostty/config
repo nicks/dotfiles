@@ -3,6 +3,7 @@ font-style = Regular
 font-style-bold = Bold
 font-style-italic = Italic
 font-size = 16
+font-thicken = true
 
 confirm-close-surface = false
 quit-after-last-window-closed = true
@@ -15,10 +16,10 @@ font-feature = -calt
 font-feature = -dlig
 font-feature = -liga
 
-background = 0e0f14
+background = 000000
 foreground = ffffff
 
-palette = 0=#15161e
+palette = 0=#000000
 palette = 1=#f7768e
 palette = 2=#9ece6a
 palette = 3=#e0af68
