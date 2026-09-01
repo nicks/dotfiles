@@ -19,11 +19,11 @@ padding = { x = 10, y = 10 }
 dynamic_padding = true
 
 [colors.primary]
-background = "#0e0f14"
+background = "#000000"
 foreground = "#ffffff"
 
 [colors.normal]
-black = "#15161e"
+black = "#000000"
 red = "#f7768e"
 green = "#9ece6a"
 yellow = "#e0af68"
