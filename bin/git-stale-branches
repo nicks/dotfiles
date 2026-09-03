@@ -1,0 +1,97 @@
+#!/bin/bash
+
+set -u
+
+usage() {
+  echo "Usage: git stale-branches [--prune] [YYYY-MM-DD]"
+  echo ""
+  echo "Lists local branches whose last commit predates the cutoff date,"
+  echo "defaulting to six months ago. Pass --prune to delete them."
+  echo ""
+  echo "The current branch, the main branch, and branches checked out in a"
+  echo "worktree are never listed. Branches not yet merged into main are"
+  echo "marked as unmerged, and --prune deletes them along with the rest."
+}
+
+prune=false
+cutoff=""
+
+for arg in "$@" ; do
+  case "$arg" in
+    --prune) prune=true ;;
+    -h|--help) usage ; exit 0 ;;
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) cutoff="$arg" ;;
+    *)
+      echo -e "\033[1;31mUnrecognized argument: $arg\033[0m"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$cutoff" ] ; then
+  if [ "$(uname -s)" = "Darwin" ] ; then
+    cutoff=$(date -v-6m +%Y-%m-%d)
+  else
+    cutoff=$(date -d '6 months ago' +%Y-%m-%d)
+  fi
+fi
+
+main=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+if [ -z "$main" ] ; then
+  echo -e "\033[1;31mCould not determine the main branch. Please ensure your repository has a default branch set on origin.\033[0m"
+  exit 1
+fi
+
+# Merge status is measured against the remote tip: local main is often behind.
+base="origin/$main"
+
+# A branch checked out anywhere in the worktree set cannot be deleted, and
+# listing it would only offer the user something git will refuse to do.
+protected=$(
+  {
+    echo "$main"
+    git worktree list --porcelain | sed -n 's@^branch refs/heads/@@p'
+  } | sort -u
+)
+
+merged=$(git branch --merged "$base" --format='%(refname:short)')
+
+contains() {
+  printf '%s\n' "$1" | grep -Fxq "$2"
+}
+
+stale=""
+while IFS=' ' read -r date branch ; do
+  [ "$date" \< "$cutoff" ] || continue
+  contains "$protected" "$branch" && continue
+  stale="$stale$date $branch"$'\n'
+done < <(git for-each-ref --sort=committerdate --format='%(committerdate:short) %(refname:short)' refs/heads/)
+
+stale=$(printf '%s' "$stale")
+if [ -z "$stale" ] ; then
+  echo "No branches older than $cutoff."
+  exit 0
+fi
+
+count=$(printf '%s\n' "$stale" | wc -l | tr -d ' ')
+
+if [ "$prune" = false ] ; then
+  while IFS=' ' read -r date branch ; do
+    if contains "$merged" "$branch" ; then
+      echo "$date  $branch"
+    else
+      echo -e "$date  $branch  \033[1;33m(unmerged)\033[0m"
+    fi
+  done <<< "$stale"
+  echo ""
+  echo "$count branches older than $cutoff. Run 'git stale-branches --prune $cutoff' to delete them."
+  exit 0
+fi
+
+while IFS=' ' read -r date branch ; do
+  git branch -D "$branch"
+done <<< "$stale"
+
+echo ""
+echo "Deleted $count branches older than $cutoff. Recover one with 'git reflog' if you deleted it by mistake."

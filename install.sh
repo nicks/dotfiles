@@ -41,6 +41,18 @@ for rc in .profile .bash_profile .bashrc .zprofile .zshrc; do
   fi
 done
 
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+if [[ ! -L ~/.ssh/config ]]; then
+  ln -sf "$(pwd)/ssh/config" "$HOME/.ssh/config"
+fi
+
+# One-time: store the key's passphrase in the login Keychain so ssh can use it
+# unattended from then on.
+if [[ "$(uname -s)" == "Darwin" && -f ~/.ssh/id_ed25519 ]]; then
+  ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+fi
+
 mkdir -p ~/.claude
 if [[ ! -L ~/.claude/CLAUDE.md ]]; then
   ln -sf "$(pwd)/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"

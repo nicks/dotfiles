@@ -11,7 +11,12 @@ fi
 # check if our ssh-agent has our key loaded
 ssh-add -l | grep -q "no identities"
 if [ $? -eq 0 ] ; then
-  ssh-add || exit 1
+  # macOS reads the passphrase from the login Keychain rather than prompting.
+  if [ "$(uname -s)" = "Darwin" ] ; then
+    ssh-add --apple-use-keychain || exit 1
+  else
+    ssh-add || exit 1
+  fi
 fi
 
 username=$(gh api user --jq .login)

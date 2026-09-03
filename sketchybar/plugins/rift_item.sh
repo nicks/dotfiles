@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # Renders one sketchybar item per window in each monitor's active workspace, in
-# rift's on-screen strip order (left-to-right by column, top-to-bottom within a
-# column). The focused window is drawn green with a selected pill; every other
-# window is plain white. Clicking an item focuses that window.
+# rift's on-screen strip order: displays left-to-right, and within each display
+# the layout order rift reports. The focused window is drawn green with a
+# selected pill; every other window is plain white. Clicking an item focuses
+# that window. Terminal windows running Claude Code get a status badge in front
+# of the app icon (see claude_status.sh), so you can see which sessions are
+# working, which are waiting on you, and which are done without cycling through
+# the windows.
 #
 # Robustness: sketchybar can fire several rift events at once, so runs are
 # serialized with a lock, and a run that gets an empty/partial query result
@@ -20,6 +24,8 @@ RIFT_CLI=$(command -v rift-cli)
   [[ -x "$p" ]] && { RIFT_CLI=$p; break; }
 done
 JQ=$(command -v jq)
+
+source "$CONFIG_DIR/plugins/claude_status.sh"
 
 FOCUS_COLOR=0xff66ff66   # bright green: the focused window
 IDLE_COLOR=0xffffffff    # white: every other window
@@ -44,36 +50,39 @@ for _ in $(seq 1 40); do acquire && { got=1; break; }; sleep 0.05; done
 trap 'rm -f "$LOCK"' EXIT
 
 # --- gather the desired window set ----------------------------------------
+# rift returns an error payload as a JSON object (not an array) with exit 0, so
+# every query result is type-checked before use.
+is_array() { [[ "$(echo "$1" | "$JQ" -r 'if type == "array" then "y" else "n" end' 2>/dev/null)" == "y" ]]; }
+
 displays=$("$RIFT_CLI" query displays 2>/dev/null) || exit 0
-[[ -z "$displays" ]] && exit 0
+is_array "$displays" || exit 0
 
 order=()                       # window-server ids, in strip order
-declare -A W_PID W_IDX W_APP W_FOCUS
-while IFS= read -r space_id; do
-  [[ -z "$space_id" ]] && continue
-  ws=$("$RIFT_CLI" query workspaces --space-id "$space_id" 2>/dev/null) || exit 0
-  [[ -z "$ws" ]] && exit 0
-  # A display with no rift workspaces at all: nothing to draw for it.
-  [[ "$(echo "$ws" | "$JQ" 'length')" == "0" ]] && continue
-  # We expect exactly one active workspace per display; if none is reported the
-  # query caught a transition — bail rather than wipe the bar.
-  active=$(echo "$ws" | "$JQ" -c 'map(select(.is_active))[0] // empty')
-  [[ -z "$active" ]] && exit 0
+declare -A W_PID W_IDX W_APP W_FOCUS W_TITLE
+# `query displays` lists displays left-to-right, and `query windows --display`
+# returns that display's active workspace in layout order, so walking the two in
+# sequence yields the on-screen strip order directly.
+while IFS= read -r uuid; do
+  [[ -z "$uuid" ]] && continue
+  wins=$("$RIFT_CLI" query windows --display "$uuid" 2>/dev/null) || exit 0
+  # A failed read mid-transition would wipe the bar; leave it alone instead.
+  is_array "$wins" || exit 0
 
-  # Order windows left-to-right by column x, then top-to-bottom within a column.
-  while IFS=$'\t' read -r idx pid wsid app focused; do
+  while IFS=$'\t' read -r idx pid wsid app focused title; do
     [[ -z "$wsid" ]] && continue
     order+=("$wsid")
     W_IDX[$wsid]=$idx; W_PID[$wsid]=$pid; W_APP[$wsid]=$app; W_FOCUS[$wsid]=$focused
-  done < <(echo "$active" | "$JQ" -r '.windows | sort_by(.frame.origin.x, .frame.origin.y) | .[] | [(.id.idx|tostring),(.id.pid|tostring),(.window_server_id|tostring),.app_name,(.is_focused|tostring)] | @tsv')
-done < <(echo "$displays" | "$JQ" -r '.[].space')
+    W_TITLE[$wsid]=$title
+  done < <(echo "$wins" | "$JQ" -r '.[] | [(.id.idx|tostring),(.id.pid|tostring),(.window_server_id|tostring),.app_name,(.is_focused|tostring),.title] | @tsv')
+done < <(echo "$displays" | "$JQ" -r '.[].uuid')
 
 # If we gathered nothing but rift actually has windows, it was a transient read.
-total=$("$RIFT_CLI" query windows 2>/dev/null | "$JQ" 'length' 2>/dev/null)
+total=$("$RIFT_CLI" query windows 2>/dev/null | "$JQ" 'if type == "array" then length else 0 end' 2>/dev/null)
 [[ ${#order[@]} -eq 0 && "${total:-0}" -gt 0 ]] && exit 0
 
 # --- reconcile the bar to the desired set ---------------------------------
 declare -A want
+claude_table=$(claude_session_table)
 previous="rift"
 for wsid in "${order[@]}"; do
   want[$wsid]=1
@@ -84,12 +93,25 @@ for wsid in "${order[@]}"; do
   else
     color=$IDLE_COLOR; draw=off
   fi
+  # A terminal running Claude Code gets a status badge; anything else draws
+  # only its app icon.
+  badge=$(claude_badge "${W_TITLE[$wsid]}" "$claude_table")
+  if [[ -n "$badge" ]]; then
+    IFS=$'\t' read -r badge_icon badge_color <<< "$badge"
+    icon_args=(icon="$badge_icon" icon.color=$badge_color icon.drawing=on)
+  else
+    icon_args=(icon.drawing=off)
+  fi
+
   # focus needs both the rift window id (JSON) and the window-server id.
   click="$RIFT_CLI execute window focus --window-id '{\"pid\":${W_PID[$wsid]},\"idx\":${W_IDX[$wsid]}}' --window-server-id $wsid"
 
   sketchybar --add item "$item" left 2>/dev/null
   sketchybar --set "$item" \
-             icon.drawing=off \
+             "${icon_args[@]}" \
+             icon.font="FiraCode Nerd Font:Regular:12.0" \
+             icon.padding_left=8 \
+             icon.padding_right=0 \
              label.font="FiraCode Nerd Font:Regular:15.0" \
              label="$app_icon" \
              label.color=$color \
