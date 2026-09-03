@@ -169,6 +169,39 @@
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/autosaves/" t)
 
+;; not on any package archive, so pull it straight from github with package-vc.
+(use-package kitty-graphics
+  :vc (:url "https://github.com/cashmeredev/kitty-graphics.el")
+  :config
+  (setq kitty-graphics-enable-video t)   ; optional: inline mpv playback
+  (kitty-graphics-setup)
+  ;; The text-sizing capability probe emits \e[2K, which blanks whatever row the
+  ;; cursor is parked on (line 1 at startup) without Emacs knowing, so redisplay
+  ;; never repaints it. Force a redraw once the probe is done.
+  ;;
+  ;; The probe is re-invoked on every image refresh (it short-circuits on a
+  ;; cached terminal parameter), so this has to fire only on the real probe.
+  ;; Redrawing on the cached path clears the screen out from under every image
+  ;; placement and nothing ever stays on screen.
+  (advice-add 'kitty-graphics--query-text-sizing-support :around
+              (lambda (orig &rest args)
+                (let ((probing (not (terminal-parameter nil 'kitty-graphics-text-sizing))))
+                  (prog1 (apply orig args)
+                    (when probing (redraw-display))))))
+
+  ;; Ghostty drops a stored-but-unplaced kitty image when the screen is cleared
+  ;; with \e[2J, which Emacs emits on any full redraw. kitty-graphics.el
+  ;; transmits an image once and records the id per terminal, so every later
+  ;; a=p placement points at bytes Ghostty no longer holds and draws nothing.
+  ;; Re-send the bytes immediately before each placement so the two are
+  ;; adjacent with no clear in between. The package's PNG and base64 caches
+  ;; make this cheap; only the terminal write repeats.
+  (advice-add 'kitty-graphics--kitty-place :before
+              (lambda (ov image-id &rest _)
+                (when (eq kitty-graphics--active-backend 'kitty)
+                  (when-let* ((file (overlay-get ov 'kitty-graphics-file)))
+                    (kitty-graphics--kitty-prepare file image-id))))))
+
 ;; protobuf mode
 (use-package protobuf-mode
   :mode "\\.proto\\'")

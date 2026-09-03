@@ -4,10 +4,10 @@
 # rift's on-screen strip order: displays left-to-right, and within each display
 # the layout order rift reports. The focused window is drawn green with a
 # selected pill; every other window is plain white. Clicking an item focuses
-# that window. Terminal windows running Claude Code get a status badge in front
-# of the app icon (see claude_status.sh), so you can see which sessions are
-# working, which are waiting on you, and which are done without cycling through
-# the windows.
+# that window. Terminal windows running Claude Code get a status badge overlaid
+# on the app icon's top-right corner (see claude_status.sh), so you can see
+# which sessions are working, which are waiting on you, and which are done
+# without cycling through the windows.
 #
 # Robustness: sketchybar can fire several rift events at once, so runs are
 # serialized with a lock, and a run that gets an empty/partial query result
@@ -93,14 +93,21 @@ for wsid in "${order[@]}"; do
   else
     color=$IDLE_COLOR; draw=off
   fi
-  # A terminal running Claude Code gets a status badge; anything else draws
-  # only its app icon.
+  # A terminal running Claude Code gets a status badge, drawn as the label so
+  # it layers on top of the app icon (negative icon.padding_right pulls the
+  # label back over the icon; label.y_offset nudges it up into the icon's
+  # top-right corner instead of dead center). Anything else draws only its
+  # app icon.
+  # The label has zero width while off, so a badge-less item needs the icon's
+  # own padding_right to provide the trailing gap instead of overlapping it.
   badge=$(claude_badge "${W_TITLE[$wsid]}" "$claude_table")
   if [[ -n "$badge" ]]; then
     IFS=$'\t' read -r badge_icon badge_color <<< "$badge"
-    icon_args=(icon="$badge_icon" icon.color=$badge_color icon.drawing=on)
+    badge_args=(label="$badge_icon" label.color=$badge_color label.drawing=on)
+    icon_padding_right=-8
   else
-    icon_args=(icon.drawing=off)
+    badge_args=(label.drawing=off)
+    icon_padding_right=8
   fi
 
   # focus needs both the rift window id (JSON) and the window-server id.
@@ -108,15 +115,16 @@ for wsid in "${order[@]}"; do
 
   sketchybar --add item "$item" left 2>/dev/null
   sketchybar --set "$item" \
-             "${icon_args[@]}" \
-             icon.font="FiraCode Nerd Font:Regular:12.0" \
+             icon.font="FiraCode Nerd Font:Regular:15.0" \
+             icon="$app_icon" \
+             icon.color=$color \
              icon.padding_left=8 \
-             icon.padding_right=0 \
-             label.font="FiraCode Nerd Font:Regular:15.0" \
-             label="$app_icon" \
-             label.color=$color \
-             label.padding_left=8 \
+             icon.padding_right=$icon_padding_right \
+             "${badge_args[@]}" \
+             label.font="FiraCode Nerd Font:Regular:12.0" \
+             label.padding_left=0 \
              label.padding_right=8 \
+             label.y_offset=6 \
              background.color=$PILL_COLOR \
              background.corner_radius=6 \
              background.height=26 \
