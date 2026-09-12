@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Claude Code status for terminal windows, sourced by rift_item.sh so the window
-# strip can show what each Claude session is doing.
+# strip can show what each Claude session is doing. The statuses are the generic
+# ones in status_icons.sh -- a thinking Claude and a running build wear the same
+# badge; what marks a window as Claude Code is CLAUDE_ICON replacing its
+# terminal app icon.
 #
 # Claude Code sets the terminal title to "<mark> <session title>", where <mark>
 # is an animated spinner frame while the model is working and a static asterisk
@@ -23,16 +26,9 @@ CLAUDE_TITLE_TTL=30
 CLAUDE_BUSY_MARKS="◐ ◑"
 CLAUDE_QUIET_MARK="✳"
 
-# Badge per status. Nerd Font glyphs; the palette matches ghostty/alacritty.
-CLAUDE_ICON_BUSY=""        # nf-fa-asterisk: the model is working
-CLAUDE_ICON_WAITING=""     # nf-fa-bell: it is asking you something
-CLAUDE_ICON_IDLE=""        # nf-fa-check: the turn is finished
-CLAUDE_ICON_SHELL=""       # nf-fa-terminal: dropped into a shell
-
-CLAUDE_COLOR_BUSY=0xffe0af68     # yellow
-CLAUDE_COLOR_WAITING=0xfff7768e  # red
-CLAUDE_COLOR_IDLE=0xff9ece6a     # green
-CLAUDE_COLOR_SHELL=0xff7aa2f7    # blue
+# The glyph a window running Claude Code wears in place of its terminal app
+# icon, echoing the mark Claude puts in the title.
+CLAUDE_ICON=""              # nf-fa-asterisk
 
 # Echoes the title Claude generated for a session, or nothing if it has not
 # named the session yet (a brand new session still shows its cwd).
@@ -74,27 +70,25 @@ claude_session_table() {
   done
 }
 
-# Echoes "<icon>\t<color>" when a window title says it is running Claude Code,
-# and nothing otherwise. $1 = window title, $2 = table from claude_session_table.
-claude_badge() {
+# Echoes this window's status in the shared vocabulary (see status_icons.sh)
+# when its title says it is running Claude Code, and nothing otherwise -- so a
+# non-empty result also means "this is a Claude window".
+# $1 = window title, $2 = table from claude_session_table.
+claude_status() {
   local title=$1 table=$2 mark rest status
   mark=${title%% *}
   rest=${title#* }
 
   case " $CLAUDE_BUSY_MARKS " in
-    *" $mark "*)
-      status=busy ;;
-    *)
-      [[ "$mark" == "$CLAUDE_QUIET_MARK" ]] || return 0
-      # The mark only says the model stopped; the session file says why.
-      status=$(printf '%s\n' "$table" | awk -F'\t' -v t="$rest" '$2 == t { print $1; exit }')
-      case "$status" in waiting|shell) ;; *) status=idle ;; esac ;;
+    *" $mark "*) printf 'working\n'; return 0 ;;
   esac
+  [[ "$mark" == "$CLAUDE_QUIET_MARK" ]] || return 0
 
+  # The mark only says the model stopped; the session file says why.
+  status=$(printf '%s\n' "$table" | awk -F'\t' -v t="$rest" '$2 == t { print $1; exit }')
   case "$status" in
-    busy)    printf '%s\t%s\n' "$CLAUDE_ICON_BUSY" "$CLAUDE_COLOR_BUSY" ;;
-    waiting) printf '%s\t%s\n' "$CLAUDE_ICON_WAITING" "$CLAUDE_COLOR_WAITING" ;;
-    shell)   printf '%s\t%s\n' "$CLAUDE_ICON_SHELL" "$CLAUDE_COLOR_SHELL" ;;
-    *)       printf '%s\t%s\n' "$CLAUDE_ICON_IDLE" "$CLAUDE_COLOR_IDLE" ;;
+    waiting) printf 'waiting\n' ;;
+    shell)   printf 'shell\n' ;;
+    *)       printf 'done\n' ;;
   esac
 }

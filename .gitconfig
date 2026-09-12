@@ -10,7 +10,7 @@
 [core]
   excludesfile = ~/global.gitignore
 [pager]
-  diff = hunk pager
+  diff = emacs-diff-pager
 [lfs]
 	concurrenttransfers = 500
 [filter "lfs"]

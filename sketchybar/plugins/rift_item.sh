@@ -2,17 +2,7 @@
 
 # Renders one sketchybar item per window in each monitor's active workspace, in
 # rift's on-screen strip order: displays left-to-right, and within each display
-# the layout order rift reports. The focused window is drawn green with a
-# selected pill; every other window is plain white. Clicking an item focuses
-# that window. Terminal windows running Claude Code get a status badge overlaid
-# on the app icon's top-right corner (see claude_status.sh), so you can see
-# which sessions are working, which are waiting on you, and which are done
-# without cycling through the windows.
-#
-# Robustness: sketchybar can fire several rift events at once, so runs are
-# serialized with a lock, and a run that gets an empty/partial query result
-# bails out instead of mutating the bar (which would otherwise leave it in a
-# corrupted partial state that doesn't self-heal until the next event).
+# the layout order rift reports.
 
 source "$CONFIG_DIR/plugins/app_icons.sh"
 
@@ -25,7 +15,9 @@ RIFT_CLI=$(command -v rift-cli)
 done
 JQ=$(command -v jq)
 
+source "$CONFIG_DIR/plugins/status_icons.sh"
 source "$CONFIG_DIR/plugins/claude_status.sh"
+source "$CONFIG_DIR/plugins/terminal_status.sh"
 
 FOCUS_COLOR=0xff66ff66   # bright green: the focused window
 IDLE_COLOR=0xffffffff    # white: every other window
@@ -93,18 +85,21 @@ for wsid in "${order[@]}"; do
   else
     color=$IDLE_COLOR; draw=off
   fi
-  # A terminal running Claude Code gets a status badge, drawn as the label so
-  # it layers on top of the app icon (negative icon.padding_right pulls the
-  # label back over the icon; label.y_offset nudges it up into the icon's
-  # top-right corner instead of dead center). Anything else draws only its
-  # app icon.
-  # The label has zero width while off, so a badge-less item needs the icon's
-  # own padding_right to provide the trailing gap instead of overlapping it.
-  badge=$(claude_badge "${W_TITLE[$wsid]}" "$claude_table")
+  # Window status for claude and terminal windows
+  status=$(claude_status "${W_TITLE[$wsid]}" "$claude_table")
+  if [[ -n "$status" ]]; then
+    app_icon=$CLAUDE_ICON
+  elif term_reports_command "${W_APP[$wsid]}"; then
+    status=$(term_status "${W_TITLE[$wsid]}")
+  fi
+
+  # draw the status badge on the top-right, slightly overlapping
+  # the app icon
+  badge=$(get_status_badge "$status")
   if [[ -n "$badge" ]]; then
     IFS=$'\t' read -r badge_icon badge_color <<< "$badge"
     badge_args=(label="$badge_icon" label.color=$badge_color label.drawing=on)
-    icon_padding_right=-8
+    icon_padding_right=-4
   else
     badge_args=(label.drawing=off)
     icon_padding_right=8
@@ -124,7 +119,7 @@ for wsid in "${order[@]}"; do
              label.font="FiraCode Nerd Font:Regular:12.0" \
              label.padding_left=0 \
              label.padding_right=8 \
-             label.y_offset=6 \
+             label.y_offset=9 \
              background.color=$PILL_COLOR \
              background.corner_radius=6 \
              background.height=26 \

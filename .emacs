@@ -166,9 +166,6 @@
 (setenv "CC" "")
 (setenv "LIBRARY_PATH" "")
 
-;; create the autosave dir if necessary, since emacs won't.
-(make-directory "~/.emacs.d/autosaves/" t)
-
 ;; not on any package archive, so pull it straight from github with package-vc.
 (use-package kitty-graphics
   :vc (:url "https://github.com/cashmeredev/kitty-graphics.el")
@@ -244,7 +241,7 @@
   nil)
 
 (defun set-indent-tabs-mode ()
-  (set (make-local-variable 'intend-tabs-mode) t)
+  (set (make-local-variable 'indent-tabs-mode) t)
   nil)
 
 (setq-default indent-tabs-mode nil)
@@ -273,8 +270,8 @@
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
 (require 'exec-path-from-shell)
-(when (memq window-system '(mac ns))
-  (run-with-idle-timer 1 nil #'exec-path-from-shell-initialize))
+(when (or (daemonp) (memq window-system '(mac ns)))
+  (exec-path-from-shell-initialize))
 
 (add-hook 'java-mode-hook 'add-untabify-on-write-hook)
 (add-hook 'java-mode-hook 'add-trailing-whitespace-on-write-hook)
@@ -427,31 +424,28 @@ PATTERN is the search pattern to use with rgrep."
   (unless (treesit-ready-p lang)
     (treesit-install-language-grammar lang)))
 
-(unless (executable-find "typescript-language-server")
-  (message "Installing typescript-language-server...")
-  (if (executable-find "npm")
-      (let ((exit (call-process "npm" nil "*npm-install*" nil
-                                "install" "-g"
-                                "typescript" "typescript-language-server")))
-        (if (zerop exit)
-            (message "typescript-language-server installed.")
-          (message "npm install failed (exit %d); see *npm-install*" exit)))
-    (message "npm not found on PATH; cannot install typescript-language-server.")))
+;; ensure typescript-language-servier is installed
+(defun my/ensure-typescript-language-server ()
+  (unless (executable-find "typescript-language-server")
+    (message "Installing typescript-language-server...")
+    (if (executable-find "npm")
+        (let ((exit (call-process "npm" nil "*npm-install*" nil
+                                  "install" "-g"
+                                  "typescript" "typescript-language-server")))
+          (if (zerop exit)
+              (message "typescript-language-server installed.")
+            (message "npm install failed (exit %d); see *npm-install*" exit)))
+      (message "npm not found on PATH; cannot install typescript-language-server."))))
 
-(add-hook 'typescript-ts-mode-hook 'eglot-ensure)
-(add-hook 'tsx-ts-mode-hook 'eglot-ensure)
+;; Depth -90 so the server exists before lsp-mode's own hook tries to start it.
+(add-hook 'typescript-ts-mode-hook #'my/ensure-typescript-language-server -90)
+(add-hook 'tsx-ts-mode-hook #'my/ensure-typescript-language-server -90)
 
 (use-package python-mode
   :mode "\\.py\\'"
   :defer t)
 
 (setq lsp-auto-guess-root t)
-
-(setq lsp-ui-doc-enable nil
-      lsp-ui-sideline-enable nil
-      lsp-ui-peek-enable nil
-      lsp-ui-imenu-enable nil
-      lsp-ui-flycheck-enable nil)
 
 ;;; configure swift-mode with lsp
 (use-package swift-mode
@@ -478,12 +472,6 @@ PATTERN is the search pattern to use with rgrep."
            (string-trim (shell-command-to-string "xcrun -f sourcekit-lsp")))
       "/usr/local/swift/usr/bin/sourcekit-lsp"))
 
-(use-package lsp-sourcekit
-    :ensure t
-    :after lsp-mode
-    :custom
-    (lsp-sourcekit-executable (find-sourcekit-lsp) "Find sourcekit-lsp"))
-
 (define-derived-mode tiltfile-mode
   python-mode "tiltfile"
   "Major mode for Tilt Dev."
@@ -494,27 +482,17 @@ PATTERN is the search pattern to use with rgrep."
 (use-package terraform-mode
   :mode "\\.tf\\'")
 
-;;; lsp-mode
+;;; lsp-mode -- the one LSP client for every language configured here.
+;;; Python is hooked up by lsp-pyright below, which has to load its module
+;;; before the client starts.
 (use-package lsp-mode
   :ensure t
   :init (setq lsp-keymap-prefix "C-c l")
-  :hook (python-mode . lsp-deferred)
-  :commands lsp)
-
-;;; python lsp server
-(use-package lsp-pyright
-  :ensure t
-  :defer t
-  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp))))
-
-;;; swift lsp server
-(use-package lsp-mode
-    :ensure t
-    :commands lsp
-    :hook ((swift-mode . lsp)))
-
-(use-package lsp-mode
-  :hook (tiltfile-mode . lsp)
+  :commands (lsp lsp-deferred)
+  :hook ((swift-mode . lsp-deferred)
+         (tiltfile-mode . lsp-deferred)
+         (typescript-ts-mode . lsp-deferred)
+         (tsx-ts-mode . lsp-deferred))
   :config
   (add-to-list 'lsp-language-id-configuration '(tiltfile-mode . "tiltfile"))
   (lsp-register-client
@@ -528,6 +506,19 @@ PATTERN is the search pattern to use with rgrep."
     (when lsp-eslint-auto-fix-on-save (lsp-eslint-fix-all))
     (funcall orig-fun))
   (advice-add 'lsp--before-save :around #'lsp--eslint-before-save))
+
+;;; python lsp server
+(use-package lsp-pyright
+  :ensure t
+  :defer t
+  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp-deferred))))
+
+;;; swift lsp server
+(use-package lsp-sourcekit
+  :ensure t
+  :after lsp-mode
+  :custom
+  (lsp-sourcekit-executable (find-sourcekit-lsp) "Find sourcekit-lsp"))
 
 (use-package projectile
   :ensure t

@@ -1,0 +1,58 @@
+#!/bin/sh
+# Pager that opens unified diffs in Emacs (magit's diff renderer) and hands
+# anything else to a plain pager. Wired up as git's pager.diff and jj's ui.pager.
+#
+# The rendering lives in emacs-diff-pager.el next to this file.
+
+# `bin' goes on PATH as a directory (see shell/env.sh), not as per-file
+# symlinks, so $0 is always the real path and dirname finds the sibling .el.
+elisp="$(dirname "$0")/emacs-diff-pager.el"
+
+tmp=$(mktemp "${TMPDIR:-/tmp}/emacs-diff-pager.XXXXXX") || exit 1
+plain="$tmp.plain"
+
+# Pagers get SIGPIPE'd and SIGINT'd all the time (`git diff | head', C-c), so
+# clean up on the way out no matter how we leave.
+cleanup() { rm -f "$tmp" "$plain"; }
+trap 'cleanup' EXIT
+trap 'cleanup; exit 129' HUP
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 141' PIPE
+trap 'cleanup; exit 143' TERM
+
+cat >"$tmp"
+[ -s "$tmp" ] || exit 0
+
+# git and jj colorize once they know a pager is downstream, but magit wants the
+# raw diff and applies its own faces, so sniff and hand over a decolorized copy.
+ESC=$(printf '\033')
+sed "s/${ESC}\[[0-9;]*m//g" "$tmp" >"$plain"
+
+if [ -r "$elisp" ] && grep -q '^diff --git ' "$plain"; then
+  # Diff paths are relative to the repo root, not the cwd.
+  root=$(git rev-parse --show-toplevel 2>/dev/null) ||
+    root=$(jj workspace root 2>/dev/null) ||
+    root=$PWD
+  [ -n "$root" ] || root=$PWD
+
+  # Passed through the environment rather than interpolated into an --eval, so
+  # that no path has to survive a trip through elisp string quoting.
+  #
+  # stdin is the pipe from git, so point Emacs at the terminal instead; stdout
+  # is already the terminal, which is what -nw draws on.
+  if [ -r /dev/tty ] &&
+     EMACS_DIFF_PAGER_FILE="$plain" EMACS_DIFF_PAGER_ROOT="$root" \
+     emacs -nw -l "$elisp" -f emacs-diff-pager-show </dev/tty; then
+    exit 0
+  fi
+fi
+
+# Both git and jj default to `less -FRX', so match that.  Unquoted on purpose:
+# PAGER may carry its own flags.
+pager=${PAGER:-less}
+case "${pager##*/}" in
+  emacs-diff-pager*) pager=less ;;  # never recurse into ourselves
+esac
+: "${LESS=FRX}"
+export LESS
+$pager <"$tmp"

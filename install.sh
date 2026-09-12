@@ -20,11 +20,6 @@ if [[ ! -f ~/.config/starship.toml ]]; then
   ln -s "$(pwd)/starship.toml" "$HOME/.config/starship.toml"
 fi
 
-mkdir -p ~/.config/hunk
-if [[ ! -f ~/.config/hunk/config.toml ]]; then
-  ln -s "$(pwd)/hunk/config.toml" "$HOME/.config/hunk/config.toml"
-fi
-
 mkdir -p ~/.config/jj
 if [[ ! -L ~/.config/jj/config.toml ]]; then
   ln -sf "$(pwd)/jj/config.toml" "$HOME/.config/jj/config.toml"
