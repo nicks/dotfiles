@@ -22,4 +22,3 @@ export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10
 make -j8
 sudo make install
 ```
-

@@ -17,10 +17,10 @@ ANSI 0–7 (ghostty `palette = N`, alacritty `[colors.normal]`, emacs `ansi-colo
 | ANSI | hex | role |
 |---|---|---|
 | 0 black   | `#000000` | terminal black (same as the background) |
-| 1 red     | `#f7768e` | emacs `font-lock-builtin/warning/negation`; sketchybar Claude badge "waiting on you" |
-| 2 green   | `#9ece6a` | rainbow-delimiters depth 4/8; emacs `font-lock-string-face`; sketchybar Claude badge "done" |
-| 3 yellow  | `#e0af68` | emacs `font-lock-variable-name-face`; rainbow-delimiters depth 3/7; sketchybar Claude badge "working" |
-| 4 blue    | `#7aa2f7` | emacs mode-line fg, `font-lock-function-name-face`; rainbow-delimiters depth 6; sketchybar Claude badge "in a shell" |
+| 1 red     | `#f7768e` | emacs `font-lock-builtin/warning/negation`; sketchybar status badge "waiting on you" |
+| 2 green   | `#9ece6a` | rainbow-delimiters depth 4/8; emacs `font-lock-string-face`; sketchybar status badge "done" |
+| 3 yellow  | `#e0af68` | emacs `font-lock-variable-name-face`; rainbow-delimiters depth 3/7; sketchybar status badge "working" |
+| 4 blue    | `#7aa2f7` | emacs mode-line fg, `font-lock-function-name-face`; rainbow-delimiters depth 6; sketchybar status badge "in a shell" |
 | 5 magenta | `#bb9af7` | emacs `font-lock-keyword/constant/preprocessor`; rainbow-delimiters depth 5/9 |
 | 6 cyan    | `#7dcfff` | sketchybar monitor 2; emacs `font-lock-type-face`; rainbow-delimiters depth 2 |
 | 7 white   | `#ffffff` | foreground; rainbow-delimiters depth 1 |
@@ -45,7 +45,7 @@ Sketchybar-only utility colors (`sketchybar/sketchybarrc`, `sketchybar/plugins/p
 
 ## Sketchybar
 
-- `sketchybar/plugins/claude_status.sh` — Claude Code status badge colors (working/waiting/done/shell), drawn on the window items by `rift_item.sh`
+- `sketchybar/plugins/status_icons.sh` — window status badge glyphs and colors (working/waiting/done/shell), drawn on the window items by `rift_item.sh`. The badges are generic: `claude_status.sh` classifies Claude Code sessions and `terminal_status.sh` classifies plain terminals, but both map onto this one palette
 - `sketchybar/plugins/aerospace_item.sh` — per-monitor workspace label colors (green/blue/orange for monitors 1/2/3). Sketchybar uses `0xAARRGGBB`, so `#66ff66` becomes `0xff66ff66`.
 - `sketchybar/sketchybarrc` — bar background, default icon/label colors, app icon highlight colors, stats background
 - `sketchybar/plugins/power.sh` — battery color thresholds

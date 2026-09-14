@@ -5,7 +5,7 @@ name = "Nick Santos"
 email = "nicholas.j.santos@gmail.com"
 
 [ui]
-pager = ["hunk", "pager"]
+pager = ["emacs-diff-pager"]
 diff-formatter = ":git"
 
 [remotes.origin]
