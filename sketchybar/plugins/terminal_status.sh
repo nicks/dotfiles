@@ -11,6 +11,7 @@
 # window is busy with something.
 #
 #   ~/src/tilt    -> at a prompt
+#   …/src/long-repo-name/mobile-client -> at a prompt, path abbreviated by ghostty
 #   brew upgrade  -> running a command
 #
 # Terminals whose titles do not work this way are left alone below, or they
@@ -33,7 +34,8 @@ term_reports_command() {
 term_status() {
   case "$1" in
     # A path (or nothing yet) is Ghostty reporting the cwd at an idle prompt.
-    ""|/*|"~"|"~/"*) return 0 ;;
+    # Ghostty abbreviates a cwd four or more components deep to "…/last/three".
+    ""|/*|"~"|"~/"*|"…/"*) return 0 ;;
     *) printf 'working\n' ;;
   esac
 }

@@ -2,8 +2,9 @@
 
 ## Comments
 
-Write comments that explain product or architecture context — the "why" behind the
-code. Omit comments that describe what the implementation does.
+When writing code comments, your audience is a user who needs to 
+know the essentials of how and when to use your API. They do
+not need to know how it works or past architecture decisions.
 
 ## Simplify
 

@@ -18,6 +18,21 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
+[merge]
+	tool = smerge
+	conflictStyle = zdiff3
+[mergetool "smerge"]
+	# `git mergetool` opens the conflicted file in terminal emacs with
+	# smerge-mode. C-c ^ {n,p} to move between hunks, C-c ^ {m,o,b,a} to keep
+	# mine/other/base/all, then C-x C-s C-x C-c.
+	cmd = emacs -nw "$MERGED" --eval "(smerge-mode 1)"
+	# emacs's exit code says nothing about the merge, so let git decide from the
+	# file: saved means resolved, quitting without saving prompts.
+	trustExitCode = false
+[mergetool]
+	keepBackup = false
+	# skip the "hit return to start merge resolution tool" step, like jj resolve
+	prompt = false
 [branch]
 	sort = -committerdate
 [tag]

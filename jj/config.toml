@@ -7,6 +7,17 @@ email = "nicholas.j.santos@gmail.com"
 [ui]
 pager = ["emacs-diff-pager"]
 diff-formatter = ":git"
+merge-editor = "smerge"
+conflict-marker-style = "git"
+
+# `jj resolve` opens the conflicted file in terminal emacs with smerge-mode.
+# Resolve with C-c ^ {n,p} to move between hunks and C-c ^ {m,o,b,a} to keep
+# mine/other/base/all, then C-x C-s C-x C-c. Any markers left in the file stay
+# a conflict.
+[merge-tools.smerge]
+program = "emacs"
+merge-args = ["-nw", "$output", "--eval", "(smerge-mode 1)"]
+merge-tool-edits-conflict-markers = true
 
 [remotes.origin]
 auto-track-bookmarks = "*"

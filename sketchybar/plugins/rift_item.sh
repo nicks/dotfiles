@@ -2,7 +2,8 @@
 
 # Renders one sketchybar item per window in each monitor's active workspace, in
 # rift's on-screen strip order: displays left-to-right, and within each display
-# the layout order rift reports.
+# the layout order rift reports. Each window is drawn only on its own display's
+# bar, so a monitor's strip shows just that monitor's windows.
 
 source "$CONFIG_DIR/plugins/app_icons.sh"
 
@@ -49,8 +50,20 @@ is_array() { [[ "$(echo "$1" | "$JQ" -r 'if type == "array" then "y" else "n" en
 displays=$("$RIFT_CLI" query displays 2>/dev/null) || exit 0
 is_array "$displays" || exit 0
 
+# rift and sketchybar key displays by the same UUID, so a rift display maps onto
+# sketchybar's arrangement id (1-based) and its window items get pinned to that
+# display's bar. A display sketchybar doesn't know about falls back to "all".
+sb_displays=$(sketchybar --query displays 2>/dev/null)
+display_index() {
+  local idx
+  idx=$(echo "$sb_displays" | "$JQ" -r --arg u "$1" '.[] | select(.UUID == $u) | ."arrangement-id"' 2>/dev/null)
+  echo "${idx:-all}"
+}
+
 order=()                       # window-server ids, in strip order
-declare -A W_PID W_IDX W_APP W_FOCUS W_TITLE
+# Per-window attributes, all keyed by window-server id. macOS ships bash 3.2,
+# which has no associative arrays — these stay plain indexed arrays, so every
+# lookup key here has to be numeric.
 # `query displays` lists displays left-to-right, and `query windows --display`
 # returns that display's active workspace in layout order, so walking the two in
 # sequence yields the on-screen strip order directly.
@@ -60,11 +73,12 @@ while IFS= read -r uuid; do
   # A failed read mid-transition would wipe the bar; leave it alone instead.
   is_array "$wins" || exit 0
 
+  disp=$(display_index "$uuid")
   while IFS=$'\t' read -r idx pid wsid app focused title; do
     [[ -z "$wsid" ]] && continue
     order+=("$wsid")
     W_IDX[$wsid]=$idx; W_PID[$wsid]=$pid; W_APP[$wsid]=$app; W_FOCUS[$wsid]=$focused
-    W_TITLE[$wsid]=$title
+    W_TITLE[$wsid]=$title; W_DISPLAY[$wsid]=$disp
   done < <(echo "$wins" | "$JQ" -r '.[] | [(.id.idx|tostring),(.id.pid|tostring),(.window_server_id|tostring),.app_name,(.is_focused|tostring),.title] | @tsv')
 done < <(echo "$displays" | "$JQ" -r '.[].uuid')
 
@@ -73,7 +87,6 @@ total=$("$RIFT_CLI" query windows 2>/dev/null | "$JQ" 'if type == "array" then l
 [[ ${#order[@]} -eq 0 && "${total:-0}" -gt 0 ]] && exit 0
 
 # --- reconcile the bar to the desired set ---------------------------------
-declare -A want
 claude_table=$(claude_session_table)
 previous="rift"
 for wsid in "${order[@]}"; do
@@ -124,6 +137,7 @@ for wsid in "${order[@]}"; do
              background.corner_radius=6 \
              background.height=26 \
              background.drawing=$draw \
+             display=${W_DISPLAY[$wsid]} \
              click_script="$click"
   sketchybar --move "$item" after "$previous"
   previous="$item"

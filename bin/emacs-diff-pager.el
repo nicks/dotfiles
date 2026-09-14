@@ -28,10 +28,17 @@ to parse diffs whose paths carry no prefix."
      t t)
     ;; Only touch the ---/+++ lines of this file's header, so that content
     ;; lines inside a hunk (e.g. when diffing a patch file) are left alone.
-    (let ((limit (save-excursion
-                   (if (re-search-forward "^@@" nil t) (point) (point-max)))))
-      (while (re-search-forward "^\\(---\\|\\+\\+\\+\\) \\(\"?\\)[ab]/" limit t)
-        (replace-match "\\1 \\2")))))
+    ;; A binary file has no hunk, so the next file's header bounds the search
+    ;; too; without it the scan runs on into later files.  `save-excursion'
+    ;; keeps that scan from carrying the outer loop past the headers it
+    ;; crossed, which would leave them unstripped.
+    (save-excursion
+      (let ((limit (save-excursion
+                     (if (re-search-forward "^\\(?:@@\\|diff --git \\)" nil t)
+                         (match-beginning 0)
+                       (point-max)))))
+        (while (re-search-forward "^\\(---\\|\\+\\+\\+\\) \\(\"?\\)[ab]/" limit t)
+          (replace-match "\\1 \\2"))))))
 
 (defun emacs-diff-pager-show (&optional file dir)
   "Display the unified diff in FILE in a magit diff buffer, filling the frame.
