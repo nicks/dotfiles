@@ -24,6 +24,9 @@ _prepend_path "/opt/homebrew/opt/node@24/bin"
 _prepend_path "/home/linuxbrew/.linuxbrew/bin"
 _prepend_path "/opt/homebrew/opt/postgresql@18/bin"
 _prepend_path "$HOME/Library/pnpm"
+# mise shims resolve each repo's pinned node, pnpm, and JDK in shells that
+# never run `mise activate`, like editors and agent tool calls.
+_prepend_path "$HOME/.local/share/mise/shims"
 _prepend_path "$HOME/src/dotfiles/bin"
 _prepend_path "$HOME/.local/bin"
 _prepend_path "$HOME/bin"
