@@ -1,0 +1,18 @@
+# Python deps for holo-layer, the PyQt overlay that draws the emacs cursor tail.
+# install.sh installs these into a dedicated venv at ~/.local/venvs/holo-layer,
+# and .emacs points `holo-layer-python-command' at that venv's interpreter.
+#
+# Pinned so every machine gets the combination that was actually tested. To
+# refresh: install unpinned into a scratch venv, then `pip freeze` the result.
+epc==0.0.5
+sexpdata==1.0.2
+six==1.17.0
+inflect==7.5.0
+
+# Pulls in PyQt6-Qt6 and PyQt6-sip as its own dependencies.
+PyQt6==6.11.0
+
+# holo_layer.py imports AppKit on macOS and Xlib on X11; upstream tells you to
+# install all of pyobjc, but AppKit alone lives in pyobjc-framework-Cocoa.
+pyobjc-framework-Cocoa==12.2.2 ; sys_platform == "darwin"
+python-xlib==0.33 ; sys_platform == "linux"

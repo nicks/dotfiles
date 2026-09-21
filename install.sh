@@ -10,6 +10,15 @@ fi
 
 python3 -m pip install webdiff --break-system-packages
 
+# holo-layer (the emacs cursor tail) draws its overlay from a PyQt process that
+# emacs talks to over epc.
+HOLO_LAYER_VENV="$HOME/.local/venvs/holo-layer"
+if [[ ! -x "$HOLO_LAYER_VENV/bin/python" ]]; then
+  python3 -m venv "$HOLO_LAYER_VENV"
+fi
+"$HOLO_LAYER_VENV/bin/python" -m pip install --upgrade pip
+"$HOLO_LAYER_VENV/bin/python" -m pip install -r python/holo-layer-requirements.txt
+
 for dir in environment.d sway ghostty; do
   if [[ ! -d ~/.config/$dir ]]; then
     ln -s "$(pwd)/$dir" "$HOME/.config/$dir"

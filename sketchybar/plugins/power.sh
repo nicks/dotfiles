@@ -5,6 +5,7 @@ CHARGING=$(pmset -g batt | grep 'AC Power')
 
 if [[ $CHARGING != "" ]]; then
   sketchybar -m --set battery \
+    icon.color=0xFFFFFFFF \
     icon="󰂄" \
     label=$(printf "${BATT_PERCENT}%%")
   exit 0

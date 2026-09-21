@@ -86,6 +86,9 @@
 (defconst my/palette-black-background "#000000")
 (defconst my/palette-foreground-gray  "#737aa2")
 (defconst my/mode-line-background     "#15161e")
+;; brighter than the palette green so the cursor stands out; matches the
+;; ghostty cursor-color and sketchybar monitor 1.
+(defconst my/palette-bright-green     "#66ff66")
 
 ;; frame and font settings
 (add-to-list 'default-frame-alist '(tool-bar-lines . t))
@@ -98,6 +101,7 @@
 (add-to-list 'initial-frame-alist '(undecorated . t))
 (add-to-list 'default-frame-alist `(background-color . ,my/palette-black-background))
 (add-to-list 'default-frame-alist `(foreground-color . ,my/palette-white))
+(add-to-list 'default-frame-alist `(cursor-color . ,my/palette-bright-green))
 (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font-16"))
 (set-face-background 'mode-line my/mode-line-background)
 (set-face-foreground 'mode-line my/palette-blue)
@@ -198,6 +202,19 @@
                 (when (eq kitty-graphics--active-backend 'kitty)
                   (when-let* ((file (overlay-get ov 'kitty-graphics-file)))
                     (kitty-graphics--kitty-prepare file image-id))))))
+
+;; cursor tail implemented on holo layer.
+(use-package holo-layer
+  :if (display-graphic-p)
+  :vc (:url "https://github.com/manateelazycat/holo-layer")
+  :config
+  ;; install.sh builds this venv from python/holo-layer-requirements.txt.
+  (setq holo-layer-python-command (expand-file-name "~/.local/venvs/holo-layer/bin/python"))
+  (setq holo-layer-enable-cursor-animation t)
+  (setq holo-layer-cursor-color my/palette-bright-green)
+  (setq holo-layer-cursor-alpha 200)
+  (add-to-list 'holo-layer-cursor-block-commands "self-insert-command")
+  (holo-layer-enable))
 
 ;; protobuf mode
 (use-package protobuf-mode
