@@ -19,6 +19,9 @@ font-feature = -liga
 background = 000000
 foreground = ffffff
 
+cursor-color = 66ff66
+cursor-text = 000000
+
 palette = 0=#000000
 palette = 1=#f7768e
 palette = 2=#9ece6a
@@ -35,3 +38,7 @@ palette = 12=#7aa2f7
 palette = 13=#bb9af7
 palette = 14=#7dcfff
 palette = 15=#ffffff
+
+# glsl cursor tail (ghostty/shaders/cursor_tail.glsl).
+custom-shader = shaders/cursor_tail.glsl
+custom-shader-animation = true

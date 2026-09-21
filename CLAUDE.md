@@ -1,56 +1,44 @@
-# Color palette locations
+# Colors
 
-When changing a shared color, update all of these so they stay in sync.
+Tokyo Night-flavored 16-color palette, with a custom bright green for cursors.
 
-## Shared palette (Tokyo Night-flavored, with a custom bright green)
+## Where the palette lives
 
-Terminal/editor color palette — the canonical 16-color set lives in three places that should match:
+`ghostty/config` is canonical: `background`, `foreground`, and `palette = N=#RRGGBB`
+for ANSI 0–15. Two files mirror it and must be updated in the same change:
 
-- `ghostty/config` — `background`, `foreground`, and `palette = N=#RRGGBB` (entries 0–15)
-- `alacritty/alacritty.toml` — `[colors.primary]`, `[colors.normal]`, `[colors.bright]`
-- `.emacs` — `custom-set-faces` block: `rainbow-delimiters-depth-*-face` and `font-lock-*-face`, both mapped to the ghostty palette. Plus `set-background-color`, `set-foreground-color`, the `mode-line` face, and `ansi-color-names-vector` for compile/shell buffers
+- `alacritty/alacritty.toml` — `[colors.primary]`, `[colors.normal]` (0–7),
+  `[colors.bright]` (8–15)
+- `.emacs` — `set-background-color`, `set-foreground-color`,
+  `ansi-color-names-vector`, and the `custom-set-faces` block, where every
+  `font-lock-*-face` and `rainbow-delimiters-depth-*-face` is deliberately mapped
+  onto an ANSI slot rather than given its own color
 
-### Master palette — every color used across emacs/ghostty/alacritty/sketchybar
+Bright black (palette 8, `#414868`) is the one slot unused outside the palette
+definitions themselves.
 
-ANSI 0–7 (ghostty `palette = N`, alacritty `[colors.normal]`, emacs `ansi-color-names-vector`):
+## Off-palette colors
 
-| ANSI | hex | role |
-|---|---|---|
-| 0 black   | `#000000` | terminal black (same as the background) |
-| 1 red     | `#f7768e` | emacs `font-lock-builtin/warning/negation`; sketchybar status badge "waiting on you" |
-| 2 green   | `#9ece6a` | rainbow-delimiters depth 4/8; emacs `font-lock-string-face`; sketchybar status badge "done" |
-| 3 yellow  | `#e0af68` | emacs `font-lock-variable-name-face`; rainbow-delimiters depth 3/7; sketchybar status badge "working" |
-| 4 blue    | `#7aa2f7` | emacs mode-line fg, `font-lock-function-name-face`; rainbow-delimiters depth 6; sketchybar status badge "in a shell" |
-| 5 magenta | `#bb9af7` | emacs `font-lock-keyword/constant/preprocessor`; rainbow-delimiters depth 5/9 |
-| 6 cyan    | `#7dcfff` | sketchybar monitor 2; emacs `font-lock-type-face`; rainbow-delimiters depth 2 |
-| 7 white   | `#ffffff` | foreground; rainbow-delimiters depth 1 |
-
-ANSI 8–15 (`[colors.bright]`) repeat 1–7 except palette 8 = `#414868` (bright black, currently unused outside the palette itself).
-
-Other colors deliberately used:
-- `#000000` — global background (ghostty, alacritty, emacs); also ANSI black
-- `#15161e` — emacs mode-line background (`my/mode-line-background`)
-- `#66ff66` — bright green, sketchybar monitor 1 (more vivid than the palette green)
-- `#737aa2` — gray, emacs comment/doc faces (brighter than palette 8)
-- `#ff9933` — orange, sketchybar monitor 3 (no orange in the ghostty palette)
-
-Sketchybar-only utility colors (`sketchybar/sketchybarrc`, `sketchybar/plugins/power.sh`):
-- `0xff323232` — bar background
-- `0xff3b4252` — stats item background (Nord-ish dark gray)
-- `0xff8b0a0d` — dark red app-icon highlight
-- `0xff10528c` — dark blue app-icon highlight
-- `0xffff3333` — low-battery red
-- `0x44ffffff` — translucent white workspace pill bg
-
+A few colors are intentionally *not* from the 16: the bright green cursor
+(`#66ff66`, shared by ghostty's `cursor-color` — which `cursor_tail.glsl`
+follows — and emacs' `my/palette-bright-green` for both the frame cursor and
+`holo-layer-cursor-color`), the emacs mode-line background and comment gray, and
+sketchybar's bar/badge chrome. Grep for the literal hex before assuming a color
+is used in one place only.
 
 ## Sketchybar
 
-- `sketchybar/plugins/status_icons.sh` — window status badge glyphs and colors (working/waiting/done/shell), drawn on the window items by `rift_item.sh`. The badges are generic: `claude_status.sh` classifies Claude Code sessions and `terminal_status.sh` classifies plain terminals, but both map onto this one palette
-- `sketchybar/plugins/aerospace_item.sh` — per-monitor workspace label colors (green/blue/orange for monitors 1/2/3). Sketchybar uses `0xAARRGGBB`, so `#66ff66` becomes `0xff66ff66`.
-- `sketchybar/sketchybarrc` — bar background, default icon/label colors, app icon highlight colors, stats background
+Sketchybar takes `0xAARRGGBB`, so `#66ff66` is written `0xff66ff66`. Colors are
+set in:
+
+- `sketchybar/plugins/status_icons.sh` — the one palette for window status
+  badges (working / waiting / done / shell). `claude_status.sh` and
+  `terminal_status.sh` only classify; they both render through this file.
+- `sketchybar/plugins/aerospace_item.sh` — workspace label color per monitor
 - `sketchybar/plugins/power.sh` — battery color thresholds
+- `sketchybar/sketchybarrc` — bar background, default icon/label colors, app
+  icon highlights, stats background
 
 ## Linux desktop (sway/i3)
 
-- `mako/config` — notification background/border
-- `waybar/style.css` — bar and module styling
+Independent of the above: `mako/config` (notifications) and `waybar/style.css`.
