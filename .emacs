@@ -213,6 +213,10 @@
   (setq holo-layer-enable-cursor-animation t)
   (setq holo-layer-cursor-color my/palette-bright-green)
   (setq holo-layer-cursor-alpha 200)
+  ;; holo repaints aren't cheap - they go through the holo layer,
+  ;; which is a separate process.
+  (setq holo-layer-cursor-animation-interval 16)
+  (setq holo-layer-cursor-animation-duration 120)
   (add-to-list 'holo-layer-cursor-block-commands "self-insert-command")
   (holo-layer-enable))
 
