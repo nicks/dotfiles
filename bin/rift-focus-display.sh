@@ -19,8 +19,10 @@ cx=$(printf '%s' "$cur" | jq '.frame.origin.x + .frame.size.width  / 2')
 cy=$(printf '%s' "$cur" | jq '.frame.origin.y + .frame.size.height / 2')
 
 # Nearest display strictly in the requested direction (squared distance avoids
-# needing abs); empty if there is none that way.
-target=$(printf '%s' "$displays" | jq -c --argjson cx "$cx" --argjson cy "$cy" --arg dir "$dir" '
+# needing abs); empty if there is none that way. Carry the UUID rather than the
+# space id so rift resolves the display's current space when the query runs,
+# instead of trusting the space from this snapshot.
+target=$(printf '%s' "$displays" | jq -r --argjson cx "$cx" --argjson cy "$cy" --arg dir "$dir" '
   [ .[]
     | (.frame.origin.x + .frame.size.width  / 2) as $x
     | (.frame.origin.y + .frame.size.height / 2) as $y
@@ -30,16 +32,16 @@ target=$(printf '%s' "$displays" | jq -c --argjson cx "$cx" --argjson cy "$cy" -
         ($dir == "up"    and $y < $cy) or
         ($dir == "down"  and $y > $cy)
       )
-    | { space: .space,
+    | { uuid: .uuid,
         dist: (if $dir == "left" or $dir == "right"
                then ($x - $cx) * ($x - $cx)
                else ($y - $cy) * ($y - $cy) end) }
-  ] | sort_by(.dist) | .[0].space // empty')
+  ] | sort_by(.dist) | .[0].uuid // empty')
 
 [ -z "$target" ] && exit 0
 
 # Raise the last-focused window on that display, else its first window.
-win=$(rift-cli query workspaces --space-id "$target" \
+win=$(rift-cli query workspaces --display "$target" \
   | jq -c '[.[] | select(.is_active) | .windows[]] as $w
            | (($w | map(select(.is_focused)))[0] // $w[0]).id // empty')
 [ -z "$win" ] && exit 0
