@@ -23,8 +23,8 @@
     "height": 32,
 
     "modules-left": [
-        "sway/workspaces",
-        "sway/window"
+        "custom/niri-windows",
+        "niri/window"
     ],
     "modules-center": [
     ],
@@ -133,6 +133,20 @@
         }
     },
     
+    "niri/window": {
+        "format": "{}",
+        "max-length": 100
+    },
+
+    "custom/niri-windows": {
+        "exec": "~/.config/waybar/scripts/niri-windows.sh",
+        "return-type": "json",
+        // Relaunch if niri's event stream drops
+        "restart-interval": 1,
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
     "temperature": {
       "critical-threshold": 80,
       "interval": 5,

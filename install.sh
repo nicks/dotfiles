@@ -6,6 +6,15 @@ cd "$(dirname $0)"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
   cargo install sway-new-workspace
+
+  # FiraCode Nerd Font, including the Propo variant waybar uses. On macOS this
+  # comes from the Brewfile instead.
+  if ! fc-list | grep -q "FiraCode Nerd Font Propo"; then
+    mkdir -p ~/.local/share/fonts
+    curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.tar.xz \
+      | tar -xJ -C ~/.local/share/fonts --wildcards '*.ttf'
+    fc-cache -f ~/.local/share/fonts
+  fi
 fi
 
 python3 -m pip install webdiff --break-system-packages
@@ -19,11 +28,18 @@ fi
 "$HOLO_LAYER_VENV/bin/python" -m pip install --upgrade pip
 "$HOLO_LAYER_VENV/bin/python" -m pip install -r python/holo-layer-requirements.txt
 
-for dir in environment.d sway ghostty; do
+for dir in environment.d sway ghostty niri waybar; do
   if [[ ! -d ~/.config/$dir ]]; then
     ln -s "$(pwd)/$dir" "$HOME/.config/$dir"
   fi
 done
+
+# Per-host ghostty overrides: link ~/.config/ghostty-local.conf to the matching
+# config-$(hostname) file when one exists (referenced from ghostty/config).
+host_ghostty="$(pwd)/ghostty/config-$(hostname -s)"
+if [[ -f "$host_ghostty" ]]; then
+  ln -sf "$host_ghostty" "$HOME/.config/ghostty-local.conf"
+fi
 
 if [[ ! -f ~/.config/starship.toml ]]; then
   ln -s "$(pwd)/starship.toml" "$HOME/.config/starship.toml"
@@ -69,4 +85,3 @@ fi
 if [[ ! -f ~/.Brewfile ]]; then
   ln -s "$(pwd)/.Brewfile" "$HOME/.Brewfile"
 fi
-

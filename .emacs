@@ -104,6 +104,37 @@
 (add-to-list 'default-frame-alist `(cursor-color . ,my/palette-bright-green))
 (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font-16"))
 (set-face-background 'mode-line my/mode-line-background)
+
+;; font size follows the physical size of the monitor a frame is on: the
+;; built-in laptop panel is ~13.9" diagonal, externals are larger.
+(defconst my/font-family "FiraCode Nerd Font")
+(defconst my/font-size-default 16)
+(defconst my/font-size-small 14)
+(defconst my/small-monitor-max-inches 14.5)
+
+(defun my/monitor-diagonal-inches (frame)
+  "Physical diagonal of the monitor showing FRAME, in inches, or nil if unknown."
+  (let ((mm (alist-get 'mm-size (frame-monitor-attributes frame))))
+    (when (and mm (> (car mm) 0) (> (cadr mm) 0))
+      (/ (sqrt (+ (* (car mm) (car mm)) (* (cadr mm) (cadr mm)))) 25.4))))
+
+(defun my/apply-font (&optional frame)
+  "Set FRAME's font size based on the physical size of its monitor."
+  (let* ((frame (or frame (selected-frame)))
+         (inches (my/monitor-diagonal-inches frame))
+         (size (if (and inches (<= inches my/small-monitor-max-inches))
+                   my/font-size-small
+                 my/font-size-default)))
+    (when (and (display-graphic-p frame)
+               (not (equal size (frame-parameter frame 'my/font-size))))
+      (set-frame-font (format "%s-%d" my/font-family size) t (list frame))
+      (set-frame-parameter frame 'my/font-size size))))
+
+(add-to-list 'default-frame-alist
+             `(font . ,(format "%s-%d" my/font-family my/font-size-default)))
+(add-hook 'window-setup-hook #'my/apply-font)          ; initial frame
+(add-hook 'after-make-frame-functions #'my/apply-font) ; new frames, incl. emacsclient
+(add-hook 'move-frame-functions #'my/apply-font)       ; dragging between monitors
 (set-face-foreground 'mode-line my/palette-blue)
 
 (editorconfig-mode 1)

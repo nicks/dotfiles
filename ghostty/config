@@ -10,11 +10,19 @@ quit-after-last-window-closed = true
 window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
+window-decoration = none
+gtk-titlebar = false
 macos-titlebar-style = hidden
 macos-window-shadow = false
 font-feature = -calt
 font-feature = -dlig
 font-feature = -liga
+
+# Linux defaults (fullscreen / split zoom); free these keys for programs like emacs.
+# ctrl+enter is sent as xterm's modifyOtherKeys sequence so terminal emacs sees
+# C-<return> (e.g. magit's visit-file-in-worktree) rather than plain RET.
+keybind = ctrl+enter=csi:27;5;13~
+keybind = ctrl+shift+enter=unbind
 
 background = 000000
 foreground = ffffff
@@ -42,3 +50,7 @@ palette = 15=#ffffff
 # glsl cursor tail (ghostty/shaders/cursor_tail.glsl).
 custom-shader = shaders/cursor_tail.glsl
 custom-shader-animation = true
+
+# Machine-local overrides. install.sh links this to ghostty/config-$(hostname)
+# when a matching per-host file exists. Loaded last so it wins over the above.
+config-file = ?~/.config/ghostty-local.conf
