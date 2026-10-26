@@ -53,6 +53,10 @@
         "format": "{icon} {capacity}%",
         // Not connected to AC
         "format-discharging": "{icon}  {capacity}%",
+        // Charging
+        "format-charging": "  {capacity}%", // Icon: bolt
+        // On AC but not charging (e.g. full)
+        "format-plugged": "  {capacity}%", // Icon: plug
         "format-icons": [
             "", // Icon: battery-full
             "", // Icon: battery-three-quarters
