@@ -234,23 +234,6 @@
                   (when-let* ((file (overlay-get ov 'kitty-graphics-file)))
                     (kitty-graphics--kitty-prepare file image-id))))))
 
-;; cursor tail implemented on holo layer.
-(use-package holo-layer
-  :if (display-graphic-p)
-  :vc (:url "https://github.com/manateelazycat/holo-layer")
-  :config
-  ;; install.sh builds this venv from python/holo-layer-requirements.txt.
-  (setq holo-layer-python-command (expand-file-name "~/.local/venvs/holo-layer/bin/python"))
-  (setq holo-layer-enable-cursor-animation t)
-  (setq holo-layer-cursor-color my/palette-bright-green)
-  (setq holo-layer-cursor-alpha 200)
-  ;; holo repaints aren't cheap - they go through the holo layer,
-  ;; which is a separate process.
-  (setq holo-layer-cursor-animation-interval 16)
-  (setq holo-layer-cursor-animation-duration 120)
-  (add-to-list 'holo-layer-cursor-block-commands "self-insert-command")
-  (holo-layer-enable))
-
 ;; protobuf mode
 (use-package protobuf-mode
   :mode "\\.proto\\'")
