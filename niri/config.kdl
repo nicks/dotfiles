@@ -111,7 +111,7 @@ input {
 // https://niri-wm.github.io/niri/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 16
+    gaps 4
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -308,10 +308,11 @@ animations {
 // Find more information on the wiki:
 // https://niri-wm.github.io/niri/Configuration:-Window-Rules
 
-// Open every window maximized to the screen edges (ignores gaps and struts).
-// A window-rule with no `match` applies to all windows.
+// Chrome reopens maximized if it was maximized last session, which pins it at
+// full width and makes column-width changes do nothing. Open it as a normal column.
 window-rule {
-    open-maximized true
+    match app-id=r#"^google-chrome$"#
+    open-maximized-to-edges false
 }
 
 // Work around WezTerm's initial configure bug
@@ -429,6 +430,8 @@ binds {
     Alt+K       { focus-column-right; }
     Alt+Shift+J { move-column-left; }
     Alt+Shift+K { move-column-right; }
+    // Toggle the focused column between half width and full width (with gaps).
+    Alt+R       { maximize-column; }
 
     // Reload waybar (re-reads its config), or start it if not running.
     Alt+Shift+B { spawn "sh" "-c" "killall -SIGUSR2 waybar || setsid waybar"; }

@@ -61,16 +61,16 @@ fingers = 3
 propagate_to_workspace_swipe = false
 
 [settings.layout.gaps.outer]
-top = 0
-left = 0
-# Reserve room for the bottom sketchybar (position=bottom, height=40) so tiled
+top = 4
+left = 4
+# The bottom sketchybar (position=bottom, height=40) plus a 4px gap, so tiled
 # windows don't cover it.
-bottom = 40
-right = 0
+bottom = 44
+right = 4
 
 [settings.layout.gaps.inner]
-horizontal = 0
-vertical = 0
+horizontal = 4
+vertical = 4
 
 [virtual_workspaces]
 enabled = true
@@ -125,6 +125,8 @@ comb1 = "Alt + Shift"
 # --- Window management ----------------------------------------------------
 "comb1 + Space" = "toggle_window_floating"
 "comb1 + F" = "toggle_fullscreen_within_gaps"
+# Toggle between half width (column_width_ratio) and full width within gaps.
+"Alt + R" = "toggle_fullscreen_within_gaps"
 
 "Alt + Z" = "toggle_space_activated"
 "Alt + Enter" = { "exec" = ["open", "-na", "/Applications/Ghostty.app"] }
