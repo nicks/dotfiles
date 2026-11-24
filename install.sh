@@ -78,6 +78,10 @@ if [[ ! -L ~/.claude/CLAUDE.md ]]; then
   ln -sf "$(pwd)/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 fi
 
+if [[ ! -L ~/.claude/commands ]]; then
+  ln -s "$(pwd)/claude/commands" "$HOME/.claude/commands"
+fi
+
 if [[ ! -f ~/.emacs ]]; then
   ln -s "$(pwd)/.emacs" "$HOME/.emacs"
 fi

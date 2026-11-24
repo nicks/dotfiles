@@ -90,11 +90,12 @@ comb1 = "Alt + Shift"
 [keys]
 # --- Focus (Alt) ---------------------------------------------------------
 # In the scrolling layout the primary axis is horizontal, so j/k drive the
-# columns (left/right) within a display. h/l move focus between physical
-# displays, stacked vertically here (h = up, l = down).
+# columns (left/right), wrapping onto the next display at either edge. h/l
+# move focus between physical displays, stacked vertically here (h = up,
+# l = down).
 "Alt + H" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-display.sh\" up"] }
-"Alt + J" = { move_focus = "left" }
-"Alt + K" = { move_focus = "right" }
+"Alt + J" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-column.sh\" left"] }
+"Alt + K" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-column.sh\" right"] }
 "Alt + L" = { exec = ["sh", "-c", "exec \"$HOME/src/dotfiles/bin/rift-focus-display.sh\" down"] }
 
 # --- Move the focused window (Alt + Shift) -------------------------------
@@ -127,6 +128,9 @@ comb1 = "Alt + Shift"
 "comb1 + F" = "toggle_fullscreen_within_gaps"
 # Toggle between half width (column_width_ratio) and full width within gaps.
 "Alt + R" = "toggle_fullscreen_within_gaps"
+# Pull the focused window out of a stacked column into its own column (or, if
+# it's already alone, stack it onto the column to its right).
+"comb1 + X" = { consume_or_expel_window = "right" }
 
 "Alt + Z" = "toggle_space_activated"
 "Alt + Enter" = { "exec" = ["open", "-na", "/Applications/Ghostty.app"] }
